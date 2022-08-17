@@ -1,0 +1,9 @@
+type Query {
+    transactions: [Transaction]
+}
+
+type Transaction {
+    title: String
+    description: String
+    amount: Float
+}
