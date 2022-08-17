@@ -1,0 +1,1 @@
+spring with only GQL
