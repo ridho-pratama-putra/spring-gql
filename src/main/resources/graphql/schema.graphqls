@@ -1,9 +1,17 @@
 type Query {
+    userById(id: Int): User!
+    users: [User]
+}
+
+type User {
+    id: ID!
+    name: String!
     transactions: [Transaction]
 }
 
 type Transaction {
-    title: String
-    description: String
-    amount: Float
+    title: String!
+    description: String!
+    amount: Float!
 }
+
