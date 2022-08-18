@@ -7,11 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -56,13 +57,20 @@ public class MainController {
     @BatchMapping
     Map<User, List<Transaction>> transactions(List<User> users) {
         logger.info("trxs");
+        SimpleDateFormat fromUser = new SimpleDateFormat("dd/MM/yyyy");
         return users
                 .stream()
                 .collect(Collectors.toMap(
                         customer -> customer,
-                        customer -> Arrays.asList(
-                                new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000"))
-                                , new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"))
-                        )));
+                        customer -> {
+                            try {
+                                return Arrays.asList(
+                                        new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000"), fromUser.parse("19/08/1945"))
+                                        , new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"), fromUser.parse("19/08/1945"))
+                                );
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }));
     }
 }
