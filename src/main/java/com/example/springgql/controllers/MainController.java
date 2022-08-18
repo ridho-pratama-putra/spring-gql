@@ -5,6 +5,7 @@ import com.example.springgql.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
@@ -34,15 +38,31 @@ public class MainController {
                 .build(), User.builder()
                 .id(2L)
                 .name("sumarni")
+                .build(), User.builder()
+                .id(2L)
+                .name("sumarna")
                 .build()));
     }
 
-    @SchemaMapping(typeName = "User")
-    Flux<Transaction> transactions() {
-        logger.info("Transactions called when query need transactions to show");
-        return Flux.fromIterable(Arrays.asList(
-                new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000")),
-                new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"))
-        ));
+//    @SchemaMapping(typeName = "User")
+//    Flux<Transaction> transactions() {
+//        logger.info("Transactions called when query need transactions to show");
+//        return Flux.fromIterable(Arrays.asList(
+//                new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000")),
+//                new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"))
+//        ));
+//    }
+
+    @BatchMapping
+    Map<User, List<Transaction>> transactions(List<User> users) {
+        logger.info("trxs");
+        return users
+                .stream()
+                .collect(Collectors.toMap(
+                        customer -> customer,
+                        customer -> Arrays.asList(
+                                new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000"))
+                                , new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"))
+                        )));
     }
 }
