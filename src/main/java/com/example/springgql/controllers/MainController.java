@@ -1,5 +1,6 @@
 package com.example.springgql.controllers;
 
+import com.example.springgql.models.Category;
 import com.example.springgql.models.Transaction;
 import com.example.springgql.models.User;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public class MainController {
     @BatchMapping
     Map<User, List<Transaction>> transactions(List<User> users) {
         logger.info("trxs");
-        SimpleDateFormat fromUser = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         return users
                 .stream()
                 .collect(Collectors.toMap(
@@ -65,8 +66,8 @@ public class MainController {
                         customer -> {
                             try {
                                 return Arrays.asList(
-                                        new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000"), fromUser.parse("19/08/1945"))
-                                        , new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"), fromUser.parse("19/08/1945"))
+                                        new Transaction("krupuk", new Category("kebutuhan harian"), Double.parseDouble("1000"), date.parse("19/08/1945"))
+                                        , new Transaction("jipang", new Category("kebutuhan harian"), Double.parseDouble("2000"), date.parse("19/08/1945"))
                                 );
                             } catch (ParseException e) {
                                 throw new RuntimeException(e);

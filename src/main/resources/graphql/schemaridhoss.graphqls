@@ -11,8 +11,12 @@ type User {
 
 type Transaction {
     title: String!
-    description: String!
     amount: Float!
-    date: String
+    date: String!
+    category: Category!
+}
+
+type Category{
+    description: String!
 }
 
