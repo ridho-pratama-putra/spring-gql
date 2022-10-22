@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -47,11 +48,12 @@ public class MainController {
     }
 
 //    @SchemaMapping(typeName = "User")
-//    Flux<Transaction> transactions() {
+//    Flux<Transaction> transactions() throws ParseException {
 //        logger.info("Transactions called when query need transactions to show");
+//        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
 //        return Flux.fromIterable(Arrays.asList(
-//                new Transaction("krupuk", "kebutuhan harian", Double.parseDouble("1000")),
-//                new Transaction("jipang", "kebutuhan harian", Double.parseDouble("2000"))
+//            new Transaction("krupuk", new Category("kebutuhan harian"), Double.parseDouble("1000"), date.parse("19/08/1945"))
+//            , new Transaction("jipang", new Category("kebutuhan harian"), Double.parseDouble("2000"), date.parse("19/08/1945"))
 //        ));
 //    }
 
@@ -62,8 +64,9 @@ public class MainController {
         return users
                 .stream()
                 .collect(Collectors.toMap(
-                        customer -> customer,
-                        customer -> {
+                        user -> user,
+                        user -> {
+                            logger.info(user.toString());
                             try {
                                 return Arrays.asList(
                                         new Transaction("krupuk", new Category("kebutuhan harian"), Double.parseDouble("1000"), date.parse("19/08/1945"))
