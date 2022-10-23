@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @Data
 public class User {
-    Long id;
+    String id;
     String name;
     List<Transaction> transactions;
 }

@@ -1,5 +1,5 @@
 type Query {
-    userById(id: Int): User!
+    userById(id: ID): User!
     users: [User]
 }
 

@@ -25,9 +25,9 @@ public class GQLController {
     Logger logger = LoggerFactory.getLogger(GQLController.class);
 
     @QueryMapping
-    public Mono<User> userById(@Argument int id) {
+    public Mono<User> userById(@Argument String id) {
         return Mono.just(User.builder()
-                .id(Long.valueOf(id))
+                .id(id)
                 .name("sumarno")
                 .build());
     }
@@ -35,13 +35,13 @@ public class GQLController {
     @QueryMapping
     public Flux<User> users() {
         return Flux.fromIterable(Arrays.asList(User.builder()
-                .id(1L)
+                .id(String.valueOf(1L))
                 .name("sumarno")
                 .build(), User.builder()
-                .id(2L)
+                .id(String.valueOf(2L))
                 .name("sumarni")
                 .build(), User.builder()
-                .id(2L)
+                .id(String.valueOf(2L))
                 .name("sumarna")
                 .build()));
     }

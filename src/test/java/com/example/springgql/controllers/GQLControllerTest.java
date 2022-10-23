@@ -43,8 +43,8 @@ class GQLControllerTest {
 
     @Test
     public void users_shouldReturnListOfUserWithTransaction_whenCalled() {
-        String request = "query {\n" +
-                "    userById(id: 1) {\n" +
+        String request = "query userById($id: ID){\n" +
+                "    userById(id: $id) {\n" +
                 "        name\n" +
                 "        transactions {\n" +
                 "           title\n" +
