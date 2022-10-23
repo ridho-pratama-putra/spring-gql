@@ -42,7 +42,7 @@ class GQLControllerTest {
     }
 
     @Test
-    public void users_shouldReturnListOfUserWithTransaction_whenCalled() {
+    public void usersById_shouldReturnSingleUserWithTransaction_whenCalled() {
         String request = "query userById($id: ID){\n" +
                 "    userById(id: $id) {\n" +
                 "        name\n" +
@@ -58,5 +58,25 @@ class GQLControllerTest {
                 .entity(User.class)
                 .path("userById.transactions")
                 .entityList(Transaction.class);
+    }
+
+    @Test
+    public void users_shouldReturnListOfUserWithTransaction_whenCalled() {
+        String request = "query {\n" +
+                "    users {\n" +
+                "        name\n" +
+                "        transactions {\n" +
+                "           title\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .execute()
+                .path("users")
+                .entityList(User.class)
+                .path("users.[0].transactions")
+                .entityList(User.class)
+        ;
     }
 }
