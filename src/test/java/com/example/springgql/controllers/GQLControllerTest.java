@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 @GraphQlTest
-class MainControllerTest {
+class GQLControllerTest {
 
     @Autowired
     GraphQlTester graphQlTester;

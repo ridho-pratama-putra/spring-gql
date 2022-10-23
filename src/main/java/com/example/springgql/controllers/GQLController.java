@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,9 +20,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-public class MainController {
+public class GQLController {
 
-    Logger logger = LoggerFactory.getLogger(MainController.class);
+    Logger logger = LoggerFactory.getLogger(GQLController.class);
 
     @QueryMapping
     public Mono<User> userById(@Argument int id) {
