@@ -1,5 +1,6 @@
 package com.example.springgql.controllers;
 
+import com.example.springgql.models.Transaction;
 import com.example.springgql.models.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,24 @@ class GQLControllerTest {
                 .execute()
                 .path("userById")
                 .entity(User.class);
+    }
+
+    @Test
+    public void users_shouldReturnListOfUserWithTransaction_whenCalled() {
+        String request = "query {\n" +
+                "    userById(id: 1) {\n" +
+                "        name\n" +
+                "        transactions {\n" +
+                "           title\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .execute()
+                .path("userById")
+                .entity(User.class)
+                .path("userById.transactions")
+                .entityList(Transaction.class);
     }
 }
