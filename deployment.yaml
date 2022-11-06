@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-gql-deployment
+  labels:
+    app: spring-gql
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spring-gql
+  template:
+    metadata:
+      labels:
+        app: spring-gql
+    spec:
+      containers:
+        - name: spring-gql-container
+          image: docker.io/library/spring-gql:0.0.1-SNAPSHOT
+          ports:
+            - containerPort: 8080
+              protocol: TCP
