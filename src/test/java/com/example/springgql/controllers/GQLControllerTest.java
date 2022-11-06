@@ -1,7 +1,7 @@
 package com.example.springgql.controllers;
 
-import com.example.springgql.models.Transaction;
-import com.example.springgql.models.User;
+import com.example.springgql.models.Album;
+import com.example.springgql.models.Artist;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
@@ -14,39 +14,39 @@ class GQLControllerTest {
     GraphQlTester graphQlTester;
 
     @Test
-    public void users_shouldReturnListOfUser_whenCalled() {
+    public void artist_shouldReturnListOfUser_whenCalled() {
         String request = "query {\n" +
-                "    users {\n" +
+                "    artists {\n" +
                 "        name\n" +
                 "    }\n" +
                 "}";
 
         graphQlTester.document(request)
                 .execute()
-                .path("users")
-                .entityList(User.class);
+                .path("artists")
+                .entityList(Artist.class);
     }
 
     @Test
-    public void userByid_shouldReturnSingleUser_whenCalled() {
+    public void artistByid_shouldReturnSingleUser_whenCalled() {
         String request = "query {\n" +
-                "    userById(id: 1) {\n" +
+                "    artistById(id: 1) {\n" +
                 "        name\n" +
                 "    }\n" +
                 "}";
 
         graphQlTester.document(request)
                 .execute()
-                .path("userById")
-                .entity(User.class);
+                .path("artistById")
+                .entity(Artist.class);
     }
 
     @Test
-    public void usersById_shouldReturnSingleUserWithTransaction_whenCalled() {
-        String request = "query userById($id: ID){\n" +
-                "    userById(id: $id) {\n" +
+    public void artistById_shouldReturnSingleUserWithTransaction_whenCalled() {
+        String request = "query artistById($id: ID){\n" +
+                "    artistById(id: $id) {\n" +
                 "        name\n" +
-                "        transactions {\n" +
+                "        albums {\n" +
                 "           title\n" +
                 "        }\n" +
                 "    }\n" +
@@ -54,18 +54,18 @@ class GQLControllerTest {
 
         graphQlTester.document(request)
                 .execute()
-                .path("userById")
-                .entity(User.class)
-                .path("userById.transactions")
-                .entityList(Transaction.class);
+                .path("artistById")
+                .entity(Artist.class)
+                .path("artistById.albums")
+                .entityList(Album.class);
     }
 
     @Test
-    public void users_shouldReturnListOfUserWithTransaction_whenCalled() {
+    public void artist_shouldReturnListOfUserWithTransaction_whenCalled() {
         String request = "query {\n" +
-                "    users {\n" +
+                "    artists {\n" +
                 "        name\n" +
-                "        transactions {\n" +
+                "        albums {\n" +
                 "           title\n" +
                 "        }\n" +
                 "    }\n" +
@@ -73,10 +73,10 @@ class GQLControllerTest {
 
         graphQlTester.document(request)
                 .execute()
-                .path("users")
-                .entityList(User.class)
-                .path("users.[0].transactions")
-                .entityList(User.class)
+                .path("artists")
+                .entityList(Artist.class)
+                .path("artists.[0].albums")
+                .entityList(Album.class)
         ;
     }
 }

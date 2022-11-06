@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class User {
+public class Artist {
     String id;
     String name;
-    List<Transaction> transactions;
+    List<Album> albums;
 }

@@ -1,22 +1,17 @@
 type Query {
-    userById(id: ID): User!
-    users: [User]
+    artistById(id: ID): Artist!
+    artists: [Artist]
 }
 
-type User {
+type Artist {
     id: ID!
     name: String!
-    transactions: [Transaction]
+    albums: [Album]
 }
 
-type Transaction {
+type Album {
     title: String!
-    amount: Float!
     date: String!
-    category: Category!
-}
-
-type Category{
-    description: String!
+    category: String!
 }
 

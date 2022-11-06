@@ -1,8 +1,8 @@
 package com.example.springgql.controllers;
 
-import com.example.springgql.models.Category;
-import com.example.springgql.models.Transaction;
-import com.example.springgql.models.User;
+import com.example.springgql.enums.Category;
+import com.example.springgql.models.Artist;
+import com.example.springgql.models.Album;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -25,23 +25,23 @@ public class GQLController {
     Logger logger = LoggerFactory.getLogger(GQLController.class);
 
     @QueryMapping
-    public Mono<User> userById(@Argument String id) {
-        return Mono.just(User.builder()
+    public Mono<Artist> artistById(@Argument String id) {
+        return Mono.just(Artist.builder()
                 .id(id)
                 .name("sumarno")
                 .build());
     }
 
     @QueryMapping
-    public Flux<User> users() {
-        return Flux.fromIterable(Arrays.asList(User.builder()
+    public Flux<Artist> artists() {
+        return Flux.fromIterable(Arrays.asList(Artist.builder()
                 .id(String.valueOf(1L))
                 .name("sumarno")
-                .build(), User.builder()
+                .build(), Artist.builder()
                 .id(String.valueOf(2L))
                 .name("sumarni")
-                .build(), User.builder()
-                .id(String.valueOf(2L))
+                .build(), Artist.builder()
+                .id(String.valueOf(3L))
                 .name("sumarna")
                 .build()));
     }
@@ -57,19 +57,19 @@ public class GQLController {
 //    }
 
     @BatchMapping
-    Map<User, List<Transaction>> transactions(List<User> users) {
+    Map<Artist, List<Album>> albums(List<Artist> artists) {
         logger.info("trxs");
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-        return users
+        return artists
                 .stream()
                 .collect(Collectors.toMap(
-                        user -> user,
-                        user -> {
-                            logger.info(user.toString());
+                        artist -> artist,
+                        artist -> {
+                            logger.info(artist.toString());
                             try {
                                 return Arrays.asList(
-                                        new Transaction("krupuk", new Category("kebutuhan harian"), Double.parseDouble("1000"), date.parse("19/08/1945"))
-                                        , new Transaction("jipang", new Category("kebutuhan harian"), Double.parseDouble("2000"), date.parse("19/08/1945"))
+                                        new Album("krupuk", Category.ROCK, date.parse("19/08/1945"))
+                                        , new Album("jipang", Category.POP, date.parse("19/08/1945"))
                                 );
                             } catch (ParseException e) {
                                 throw new RuntimeException(e);
