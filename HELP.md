@@ -25,7 +25,7 @@ The following guides illustrate how to use some features concretely:
 2. change docker repository to minikube ??~~~~
    ```minikube docker-env && eval $(minikube -p minikube docker-env)```
 3. apply configmap
-   ``````
+   ```kubectl apply -f config-maps.yaml```
 4. deploy
    ```kubectl apply -f deployment.yaml && kubectl apply -f service.yaml```
 5. shutdown
