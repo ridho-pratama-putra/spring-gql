@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-gql-deployment
+  labels:
+    app: spring-gql
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spring-gql
+  template:
+    metadata:
+      labels:
+        app: spring-gql
+    spec:
+      containers:
+        - name: spring-gql-container
+          image: docker.io/library/spring-gql:0.0.1-SNAPSHOT
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: MONGODB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongodb-username
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongodb-password
+            - name: MONGODB_DATABASE_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: artist-library-config-map
+                    key: mongodb_database_url
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: spring-gql-service
+spec:
+  selector:
+    app: spring-gql
+  type: LoadBalance # as marked as external service
+  ports:
+    - name: spring-gql-service
+      protocol: TCP
+      port: 8080
+      targetPort: 8080 # port of pod
+      nodePort: 30000 # so now browser will have access by this port
