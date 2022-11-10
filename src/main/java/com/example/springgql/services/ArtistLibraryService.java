@@ -6,6 +6,8 @@ import com.example.springgql.repositories.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ArtistLibraryService {
 
@@ -18,5 +20,9 @@ public class ArtistLibraryService {
                 .albums(null)
                 .build();
         return repository.save(entity);
+    }
+
+    public List<Artist> getAllArtist() {
+        return repository.findAll();
     }
 }

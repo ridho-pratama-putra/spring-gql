@@ -41,16 +41,8 @@ public class GQLController {
 
     @QueryMapping
     public Flux<Artist> artists() {
-        return Flux.fromIterable(Arrays.asList(Artist.builder()
-                .id(String.valueOf(1L))
-                .name("sumarno")
-                .build(), Artist.builder()
-                .id(String.valueOf(2L))
-                .name("sumarni")
-                .build(), Artist.builder()
-                .id(String.valueOf(3L))
-                .name("sumarna")
-                .build()));
+        List<Artist> allArtist = service.getAllArtist();
+        return Flux.fromIterable(allArtist);
     }
 
     @MutationMapping
