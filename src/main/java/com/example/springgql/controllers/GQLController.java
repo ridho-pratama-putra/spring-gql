@@ -1,12 +1,14 @@
 package com.example.springgql.controllers;
 
-import com.example.springgql.enums.Category;
+import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.Album;
+import com.example.springgql.models.graphqlInput.ArtistInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
@@ -46,6 +48,14 @@ public class GQLController {
                 .build()));
     }
 
+    @MutationMapping
+    public Mono<Artist> createArtist(@Argument ArtistInput artistInput) {
+        return Mono.just(Artist.builder()
+                .id("id of created artist")
+                .name(artistInput.getName())
+                .build());
+    }
+
 //    @SchemaMapping(typeName = "User")
 //    Flux<Transaction> transactions() throws ParseException {
 //        logger.info("Transactions called when query need transactions to show");
@@ -68,8 +78,8 @@ public class GQLController {
                             logger.info(artist.toString());
                             try {
                                 return Arrays.asList(
-                                        new Album("krupuk", Category.ROCK, date.parse("19/08/1945"))
-                                        , new Album("jipang", Category.POP, date.parse("19/08/1945"))
+                                        new Album("krupuk", "rambak", CategoryEnum.ROCK, date.parse("19/08/1945"))
+                                        , new Album("jipang", "stroberi", CategoryEnum.POP, date.parse("19/08/1945"))
                                 );
                             } catch (ParseException e) {
                                 throw new RuntimeException(e);

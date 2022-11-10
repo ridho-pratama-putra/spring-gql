@@ -3,6 +3,14 @@ type Query {
     artists: [Artist]
 }
 
+type Mutation {
+    createArtist(artistInput: ArtistInput): Artist
+}
+
+input ArtistInput {
+    name: String!
+}
+
 type Artist {
     id: ID!
     name: String!
