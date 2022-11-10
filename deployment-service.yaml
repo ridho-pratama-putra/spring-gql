@@ -32,10 +32,10 @@ spec:
                   name: mongodb-secret
                   key: mongodb-password
             - name: MONGODB_DATABASE_URL
-                valueFrom:
-                  configMapKeyRef:
-                    name: artist-library-config-map
-                    key: mongodb_database_url
+              valueFrom:
+                configMapKeyRef:
+                  name: artist-library-config-map
+                  key: mongodb_database_url
 ---
 kind: Service
 apiVersion: v1
