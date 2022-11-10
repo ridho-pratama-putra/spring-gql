@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-gql-deployment
+  name: deployment-service
   labels:
     app: spring-gql
 spec:
