@@ -4,8 +4,10 @@ import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.graphqlInput.ArtistInput;
+import com.example.springgql.services.ArtistLibraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 public class GQLController {
 
     Logger logger = LoggerFactory.getLogger(GQLController.class);
+
+    @Autowired
+    ArtistLibraryService service;
 
     @QueryMapping
     public Mono<Artist> artistById(@Argument String id) {
@@ -50,10 +55,8 @@ public class GQLController {
 
     @MutationMapping
     public Mono<Artist> createArtist(@Argument ArtistInput artistInput) {
-        return Mono.just(Artist.builder()
-                .id("id of created artist")
-                .name(artistInput.getName())
-                .build());
+        Artist artist = service.saveArtist(artistInput);
+        return Mono.just(artist);
     }
 
 //    @SchemaMapping(typeName = "User")

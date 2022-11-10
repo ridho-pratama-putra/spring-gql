@@ -1,15 +1,20 @@
 package com.example.springgql.models;
 
-import com.example.springgql.enums.Category;
+import com.example.springgql.enums.CategoryEnum;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Document
 public class Album {
+    @Id
+    String id;
     String title;
-    Category category;
+    CategoryEnum categoryEnum;
     Date date;
 }
