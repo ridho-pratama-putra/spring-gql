@@ -44,7 +44,7 @@ metadata:
 spec:
   selector:
     app: spring-gql
-  type: LoadBalance # as marked as external service
+  type: LoadBalancer # as marked as external service
   ports:
     - name: spring-gql-service
       protocol: TCP
