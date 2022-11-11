@@ -28,5 +28,7 @@ The following guides illustrate how to use some features concretely:
    ```kubectl apply -f config-maps.yaml```
 4. deploy
    ```kubectl apply -f deployment.yaml && kubectl apply -f service.yaml```
-5. shutdown
+5. get exposes url 
+   ```minikube service --all```
+6. shutdown
    ```kubectl delete service spring-gql-service && kubectl delete deploy spring-gql-deployment```
