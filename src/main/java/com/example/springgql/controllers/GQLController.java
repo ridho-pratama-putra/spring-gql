@@ -1,8 +1,8 @@
 package com.example.springgql.controllers;
 
 import com.example.springgql.enums.CategoryEnum;
-import com.example.springgql.models.Artist;
 import com.example.springgql.models.Album;
+import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.services.ArtistLibraryService;
 import org.slf4j.Logger;
@@ -33,10 +33,7 @@ public class GQLController {
 
     @QueryMapping
     public Mono<Artist> artistById(@Argument String id) {
-        return Mono.just(Artist.builder()
-                .id(id)
-                .name("sumarno")
-                .build());
+        return Mono.just(Artist.builder().id(id).name("sumarno").build());
     }
 
     @QueryMapping
@@ -65,20 +62,13 @@ public class GQLController {
     Map<Artist, List<Album>> albums(List<Artist> artists) {
         logger.info("trxs");
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-        return artists
-                .stream()
-                .collect(Collectors.toMap(
-                        artist -> artist,
-                        artist -> {
-                            logger.info(artist.toString());
-                            try {
-                                return Arrays.asList(
-                                        new Album("krupuk", "rambak", CategoryEnum.ROCK, date.parse("19/08/1945"))
-                                        , new Album("jipang", "stroberi", CategoryEnum.POP, date.parse("19/08/1945"))
-                                );
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }));
+        return artists.stream().collect(Collectors.toMap(artist -> artist, artist -> {
+            logger.info(artist.toString());
+            try {
+                return Arrays.asList(new Album("krupuk", "rambak", CategoryEnum.ROCK, date.parse("19/08/1945")), new Album("jipang", "stroberi", CategoryEnum.POP, date.parse("19/08/1945")));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 }

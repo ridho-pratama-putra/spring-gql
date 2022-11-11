@@ -2,16 +2,24 @@ package com.example.springgql.controllers;
 
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
+import com.example.springgql.services.ArtistLibraryService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
+
+import java.util.Arrays;
 
 @GraphQlTest
 class GQLControllerTest {
 
     @Autowired
     GraphQlTester graphQlTester;
+
+    @MockBean
+    ArtistLibraryService service;
 
     @Test
     public void artist_shouldReturnListOfUser_whenCalled() {
@@ -62,6 +70,7 @@ class GQLControllerTest {
 
     @Test
     public void artist_shouldReturnListOfUserWithTransaction_whenCalled() {
+        Mockito.when(service.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", Arrays.asList(new Album()))));
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
