@@ -3,4 +3,7 @@ kind: ConfigMap
 metadata:
   name: artist-library-config-map
 data:
-  mongodb_database_url: mongodb-service # defined in mongodb internal service metadata
+  mongodb_cluster: mongodb-service # defined in mongodb internal service metadata
+#  mongodb_prefix_url: "mongodb+srv" # defined in mongodb internal service metadata
+  mongodb_prefix_url: "mongodb" # defined in mongodb internal service metadata
+  mongodb_db_name: "musicLibrary"
