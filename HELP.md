@@ -30,5 +30,7 @@ The following guides illustrate how to use some features concretely:
    ```kubectl apply -f deployment.yaml && kubectl apply -f service.yaml```
 5. get exposes url 
    ```minikube service --all```
-6. shutdown
+6. enabling metrics
+   ```minikube addons enable metrics-server```
+7. shutdown
    ```kubectl delete service spring-gql-service && kubectl delete deploy spring-gql-deployment```
