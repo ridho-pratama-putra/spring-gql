@@ -46,11 +46,11 @@ spec:
                 configMapKeyRef:
                   name: artist-library-config-map
                   key: mongodb_cluster
-          resources:
-            limits:
-              cpu: 100m
-            requests:
-              cpu: 100m
+#          resources:
+#            limits:
+#              cpu: 100m
+#            requests:
+#              cpu: 100m
 ---
 kind: Service
 apiVersion: v1
