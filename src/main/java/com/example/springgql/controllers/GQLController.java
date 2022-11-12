@@ -28,8 +28,11 @@ public class GQLController {
 
     Logger logger = LoggerFactory.getLogger(GQLController.class);
 
-    @Autowired
     ArtistLibraryService service;
+
+    GQLController(ArtistLibraryService service) {
+        this.service = service;
+    }
 
     @QueryMapping
     public Mono<Artist> artistById(@Argument String id) {
