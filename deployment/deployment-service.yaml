@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-gql-deployment
+  namespace: app
   labels:
     app: spring-gql
 spec:
@@ -24,12 +25,12 @@ spec:
             - name: MONGODB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mongodb-secret
+                  name: spring-gql-secret
                   key: mongodb-username
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongodb-secret
+                  name: spring-gql-secret
                   key: mongodb-password
             - name: MONGODB_PREFIX_URL
               valueFrom:
@@ -48,7 +49,7 @@ spec:
                   key: mongodb_cluster
           resources:
             limits:
-              cpu: 450m
+              cpu: 300m
             requests:
               cpu: 200m
 ---
@@ -56,6 +57,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: spring-gql-service
+  namespace: app
 spec:
   selector:
     app: spring-gql

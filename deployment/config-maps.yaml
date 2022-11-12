@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: artist-library-config-map
+  namespace: app
 data:
-  mongodb_cluster: mongodb-service # defined in mongodb internal service metadata
+  mongodb_cluster: mongodb-service.database # defined in mongodb internal service metadata
 #  mongodb_prefix_url: "mongodb+srv" # defined in mongodb internal service metadata
   mongodb_prefix_url: "mongodb" # defined in mongodb internal service metadata
   mongodb_db_name: "musicLibrary"
