@@ -21,16 +21,20 @@ The following guides illustrate how to use some features concretely:
 * [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
 
 ### Deploy
-1. build jar file witch command ```./mvnw package``` or ```./mvnw package -DskipTests```
-2. change docker repository to minikube ??~~~~
+1. delete target to rebuild
+   ```rm -rf target```
+2. build jar file witch command ```./mvnw package``` or ```./mvnw package -DskipTests```
+3. change docker repository to minikube ??~~~~
    ```minikube docker-env && eval $(minikube -p minikube docker-env)```
-3. apply configmap
+4. apply configmap
    ```kubectl apply -f config-maps.yaml```
-4. deploy
+5. deploy
    ```kubectl apply -f deployment.yaml && kubectl apply -f service.yaml```
-5. get exposes url 
+6. get exposes url 
    ```minikube service --all```
-6. enabling metrics
+7. enabling metrics
    ```minikube addons enable metrics-server```
-7. shutdown
+8. shutdown
    ```kubectl delete service spring-gql-service && kubectl delete deploy spring-gql-deployment```
+9. radicaly redeploy :)
+   ```say deleting deployment && kubectl delete deploy spring-gql-deployment && say deleting service && kubectl delete service spring-gql-service && say deleting target && rm -rf target && say build image && ./mvnw package && docker build -t spring-gql:0.0.2-SNAPSHOT . && say deploying to kube && kubectl apply -f ./deployment/deployment-service.yaml```
