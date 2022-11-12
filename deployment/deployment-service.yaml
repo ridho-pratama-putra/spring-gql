@@ -5,7 +5,7 @@ metadata:
   labels:
     app: spring-gql
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: spring-gql
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring-gql-container
-          image: docker.io/library/spring-gql:0.0.1-SNAPSHOT
+          image: docker.io/library/spring-gql:0.0.2-SNAPSHOT
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -46,11 +46,11 @@ spec:
                 configMapKeyRef:
                   name: artist-library-config-map
                   key: mongodb_cluster
-#          resources:
-#            limits:
-#              cpu: 100m
-#            requests:
-#              cpu: 100m
+          resources:
+            limits:
+              cpu: 450m
+            requests:
+              cpu: 200m
 ---
 kind: Service
 apiVersion: v1

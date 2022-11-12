@@ -25,8 +25,7 @@ class ArtistLibraryServiceTest {
     @Test
     public void saveArtist_shouldReturnCreatedArtist_whenSuccessCreate() {
         String expectedName = "springGQLArtist";
-        Mockito.when(repository.save(Mockito.any()))
-                .thenReturn(Artist.builder().name(expectedName).build());
+        Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
         ArtistInput input = new ArtistInput(expectedName);
         Artist actualResult = service.saveArtist(input);
 
@@ -36,8 +35,7 @@ class ArtistLibraryServiceTest {
     @Test
     public void getAllArtist_shouldHaveLengthOne_whenOnlyOneDataExist() {
         String expectedName = "springGQLArtist";
-        Mockito.when(repository.findAll())
-                .thenReturn(Arrays.asList(Artist.builder().name(expectedName).build()));
+        Mockito.when(repository.findAll()).thenReturn(Arrays.asList(Artist.builder().name(expectedName).build()));
 
         List<Artist> actualResult = service.getAllArtist();
 
