@@ -33,3 +33,4 @@ build/
 /environments/
 /deployment/mongodb-secret.yaml
 /deployment/spring-gql-secret.yaml
+/deployment/app-secret-tls.yaml
