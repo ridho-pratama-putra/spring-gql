@@ -113,6 +113,10 @@ spec:
 #      port:
 #        number: 8080
   ingressClassName: ingress-spring-gql-class
+  tls:
+    - hosts:
+      - kodir.babyshark.com
+      secretName: app-secret-tls
   rules:
     - host: kodir.babyshark.com
       http:
