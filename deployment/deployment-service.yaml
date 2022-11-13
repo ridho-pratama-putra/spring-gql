@@ -114,7 +114,7 @@ spec:
 #        number: 8080
   ingressClassName: ingress-spring-gql-class
   rules:
-    - host: tuiiing.byyurrr.com
+    - host: kodir.babyshark.com
       http:
         paths:
           - path: /
