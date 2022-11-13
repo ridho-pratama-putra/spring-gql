@@ -32,8 +32,8 @@ The following guides illustrate how to use some features concretely:
    ```kubectl apply -f deployment.yaml && kubectl apply -f service.yaml```
 6. get exposes url 
    ```minikube service --all```
-7. enabling metrics
-   ```minikube addons enable metrics-server```
+7. enabling metrics & ingress (if not, created ingress wont getting address to be registered in etc/host)
+   ```minikube addons enable metrics-server && minikube addons enable ingress```
 8. shutdown
    ```kubectl delete service spring-gql-service && kubectl delete deploy spring-gql-deployment```
 9. radicaly redeploy :)

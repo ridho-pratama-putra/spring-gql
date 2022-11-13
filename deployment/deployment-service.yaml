@@ -66,10 +66,61 @@ metadata:
 spec:
   selector:
     app: spring-gql
-  type: LoadBalancer # as marked as external service
+#  type: LoadBalancer # as marked as external service
   ports:
     - name: spring-gql-service
       protocol: TCP
       port: 8080
       targetPort: 8080 # port of pod
-      nodePort: 30000 # so now browser will have access by this port
+#      nodePort: 30000 # so now browser will have access by this port
+---
+#kind: Service
+#apiVersion: v1
+#metadata:
+#  name: default-http-backend
+#  namespace: app
+#spec:
+#  type: NodePort
+#  selector:
+#    app: spring-gql
+#  ports:
+#    - protocol: TCP
+#      port: 80
+#      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+  name: ingress-spring-gql-class
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "true"
+spec:
+  controller: k8s.io/ingress-nginx
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: ingress-spring-gql
+  namespace: app
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+#  defaultBackend:
+#    service:
+#      name: spring-gql-service
+#      port:
+#        number: 8080
+  ingressClassName: ingress-spring-gql-class
+  rules:
+    - host: tuiiing.byyurrr.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spring-gql-service
+                port:
+                  number: 8080
