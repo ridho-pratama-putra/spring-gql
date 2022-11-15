@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: spring-gql-container
-          image: docker.io/library/spring-gql:0.0.2-SNAPSHOT
+          image: docker.io/library/spring-gql:0.0.5-SNAPSHOT
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -57,6 +57,24 @@ spec:
               cpu: 300m
             requests:
               cpu: 200m
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            failureThreshold: 12
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
 ---
 kind: Service
 apiVersion: v1
