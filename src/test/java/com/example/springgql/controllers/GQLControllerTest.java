@@ -50,6 +50,34 @@ class GQLControllerTest {
     }
 
     @Test
+    public void artist_shouldReturnErrorInBody_whenServiceReturnException() {
+        Mockito.when(service.getAllArtist()).thenThrow(NullPointerException.class);
+        String request = "query {\n" +
+                "    artists {\n" +
+                "        name\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .execute()
+                .errors();
+    }
+
+    @Test
+    public void artist_shouldReturnErrorInBody_whenQueryTypo() {
+        Mockito.when(service.getAllArtist()).thenThrow(NullPointerException.class);
+        String request = "query {\n" +
+                "    artiss {\n" +
+                "        name\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .execute()
+                .errors();
+    }
+
+    @Test
     public void artistById_shouldReturnSingleUserWithTransaction_whenCalled() {
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
