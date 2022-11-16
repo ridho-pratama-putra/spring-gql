@@ -7,7 +7,6 @@ import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.services.ArtistLibraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -25,8 +24,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class GQLController {
-
-    Logger logger = LoggerFactory.getLogger(GQLController.class);
+    private static final Logger logger = LoggerFactory.getLogger(GQLController.class);
 
     ArtistLibraryService service;
 
@@ -41,6 +39,7 @@ public class GQLController {
 
     @QueryMapping
     public Flux<Artist> artists() {
+        logger.info("query get all artist {} ", GQLController.class);
         List<Artist> allArtist = service.getAllArtist();
         return Flux.fromIterable(allArtist);
     }
@@ -63,10 +62,8 @@ public class GQLController {
 
     @BatchMapping
     Map<Artist, List<Album>> albums(List<Artist> artists) {
-        logger.info("trxs");
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         return artists.stream().collect(Collectors.toMap(artist -> artist, artist -> {
-            logger.info(artist.toString());
             try {
                 return Arrays.asList(new Album("krupuk", "rambak", CategoryEnum.ROCK, date.parse("19/08/1945")), new Album("jipang", "stroberi", CategoryEnum.POP, date.parse("19/08/1945")));
             } catch (ParseException e) {
