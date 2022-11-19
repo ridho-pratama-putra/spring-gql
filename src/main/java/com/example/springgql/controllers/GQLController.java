@@ -27,8 +27,6 @@ import java.util.stream.Collectors;
 
 @Controller
 public class GQLController {
-    private static final Logger logger = LoggerFactory.getLogger(GQLController.class);
-
     public final ArtistLibraryService service;
     public final LoggingService log;
 
