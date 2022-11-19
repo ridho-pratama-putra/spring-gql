@@ -1,5 +1,6 @@
 package com.example.springgql.controllers;
 
+import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.services.ArtistLibraryService;
@@ -20,6 +21,9 @@ class GQLControllerTest {
 
     @MockBean
     ArtistLibraryService service;
+
+    @MockBean
+    LoggingService loggingService;
 
     @Test
     public void artist_shouldReturnListOfUser_whenCalled() {
