@@ -34,14 +34,12 @@
 
     <!-- LOG everything at INFO level -->
     <root level="info">
-<!--        <appender-ref ref="RollingFile" />-->
         <appender-ref ref="Console" />
     </root>
 
     <!-- LOG "com.baeldung*" at TRACE level -->
-    <logger name="com.example" level="info" additivity="false">
+    <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="RollingFile" />
-        <appender-ref ref="Console" />
     </logger>
 
 </configuration>
