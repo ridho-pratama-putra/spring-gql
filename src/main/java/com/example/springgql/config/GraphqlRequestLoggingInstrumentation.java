@@ -27,13 +27,13 @@ public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation 
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
         Instant start = Instant.now();
         ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
-        log.info("incoming request with id:{} query:{} parameters:{}", executionId, parameters.getQuery(), parameters.getVariables());
+        log.info("[INCOMING] execution id: {} query: {} parameters: {}", executionId, parameters.getQuery(), parameters.getVariables());
         return SimpleInstrumentationContext.whenCompleted(((executionResult, throwable) -> {
             Duration duration = Duration.between(start, Instant.now(clock));
             if (throwable == null) {
-                log.info("execution id {} successful in duration {}", executionId, duration);
+                log.info("[SUCCESS] execution id: {} duration: {}ms", executionId, duration.toMillis());
             } else {
-                log.warn("execution id {} failed", executionId, duration, throwable);
+                log.warn("[FAILED] execution id {}", executionId, duration, throwable);
             }
         }));
     }
