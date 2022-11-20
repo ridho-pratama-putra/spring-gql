@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 @GraphQlTest
@@ -25,8 +26,11 @@ class GQLControllerTest {
     @MockBean
     LoggingService loggingService;
 
+    @MockBean
+    HttpServletRequest httpServletRequest;
+
     @Test
-    public void artist_shouldReturnListOfUser_whenCalled() {
+    public void artist_shouldReturnListOfArtist_whenCalled() {
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
@@ -40,7 +44,7 @@ class GQLControllerTest {
     }
 
     @Test
-    public void artistByid_shouldReturnSingleUser_whenCalled() {
+    public void artistByid_shouldReturnSingleArtist_whenCalled() {
         String request = "query {\n" +
                 "    artistById(id: 1) {\n" +
                 "        name\n" +
@@ -82,10 +86,12 @@ class GQLControllerTest {
     }
 
     @Test
-    public void artistById_shouldReturnSingleUserWithTransaction_whenCalled() {
+    public void artistById_shouldReturnSingleArtisWithAlbum_whenCalled() {
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
-                "        name\n" +
+                "        id\n" +
+                "   " +
+                "     name\n" +
                 "        albums {\n" +
                 "           title\n" +
                 "        }\n" +
@@ -93,6 +99,7 @@ class GQLControllerTest {
                 "}";
 
         graphQlTester.document(request)
+                .variable("id", "someValue")
                 .execute()
                 .path("artistById")
                 .entity(Artist.class)
@@ -101,7 +108,7 @@ class GQLControllerTest {
     }
 
     @Test
-    public void artist_shouldReturnListOfUserWithTransaction_whenCalled() {
+    public void artist_shouldReturnListOfArtistWithTransaction_whenCalled() {
         Mockito.when(service.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", Arrays.asList(new Album()))));
         String request = "query {\n" +
                 "    artists {\n" +

@@ -1,6 +1,7 @@
 package com.example.springgql.controllers;
 
 import com.example.springgql.enums.CategoryEnum;
+import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
@@ -32,7 +33,10 @@ public class GQLController {
     }
 
     @QueryMapping
-    public Mono<Artist> artistById(@Argument String id) {
+    public Mono<Artist> artistById(@Argument(name = "id") String id) {
+        if ("alex".equals(id)) {
+            throw new DataNotFoundException("Data not found");
+        }
         return Mono.just(Artist.builder().id(id).name("sumarno").build());
     }
 

@@ -2,6 +2,8 @@ package com.example.springgql.config;
 
 import com.example.springgql.logging.LoggingModel;
 import com.example.springgql.logging.LoggingService;
+import graphql.ExecutionResult;
+import graphql.GraphQLError;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
@@ -28,20 +30,6 @@ public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation 
     private final Clock clock;
     private final LoggingService loggingService;
     private final HttpServletRequest request;
-    Logger log = LoggerFactory.getLogger(GraphqlRequestLoggingInstrumentation.class);
-
-    @Override
-    public InstrumentationContext<List<ValidationError>> beginValidation(InstrumentationValidationParameters parameters) {
-        return SimpleInstrumentationContext.whenCompleted(((validationErrors, throwable) -> {
-            @Data
-            @AllArgsConstructor
-            @NoArgsConstructor
-            class CustomError implements ValidationErrorClassification {
-                String message;
-            }
-            new ValidationError(new CustomError("adasd"));
-        }));
-    }
 
     @Override
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
