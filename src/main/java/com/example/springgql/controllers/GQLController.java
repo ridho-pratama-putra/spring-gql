@@ -1,14 +1,11 @@
 package com.example.springgql.controllers;
 
 import com.example.springgql.enums.CategoryEnum;
-import com.example.springgql.logging.LoggingModel;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.services.ArtistLibraryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -42,12 +38,7 @@ public class GQLController {
 
     @QueryMapping
     public Flux<Artist> artists() {
-        long startTime = System.nanoTime();
         List<Artist> allArtist = service.getAllArtist();
-        log.write(LoggingModel.builder()
-                .event("get all artist")
-                .startTime(startTime)
-                .build());
         return Flux.fromIterable(allArtist);
     }
 

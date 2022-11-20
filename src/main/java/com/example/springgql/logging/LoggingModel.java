@@ -9,13 +9,17 @@ import java.util.Map;
 @Data
 public class LoggingModel {
     String event;
+    String eventId;
     Long startTime;
-    Map<String,Object> additionalProperties;
+    Long finishTime;
+    Long elapsedTime;
+    Map<String,String> additionalProperties;
     int httpStatus;
     String username;
-    String path;
     String url;
+    String clientType;
     String requestHeader;
     String requestBody;
     String httpMethod;
+    String errorMessage;
 }
