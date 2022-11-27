@@ -27,11 +27,11 @@ spec:
             - containerPort: 8080
               protocol: TCP
           env:
-            - name: MONGODB_USERNAME
+            - name: MONGODB_COLLECTION_NAME
               valueFrom:
                 secretKeyRef:
                   name: spring-gql-secret
-                  key: mongodb-username
+                  key: mongodb-collection-name
             - name: MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
