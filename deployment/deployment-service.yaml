@@ -20,38 +20,24 @@ spec:
       labels:
         app: spring-gql
     spec:
+      dnsPolicy: Default
       containers:
         - name: spring-gql-container
-          image: docker.io/library/spring-gql:0.0.5-SNAPSHOT
+          image: docker.io/library/spring-gql:0.0.1-SNAPSHOT
           ports:
             - containerPort: 8080
               protocol: TCP
           env:
-            - name: MONGODB_COLLECTION_NAME
+            - name: MONGODB_URI
               valueFrom:
                 secretKeyRef:
                   name: spring-gql-secret
-                  key: mongodb-collection-name
-            - name: MONGODB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: spring-gql-secret
-                  key: mongodb-password
-            - name: MONGODB_PREFIX_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: artist-library-config-map
-                  key: mongodb_prefix_url
+                  key: mongodb-uri
             - name: MONGODB_DATABASE
               valueFrom:
                 configMapKeyRef:
                   name: artist-library-config-map
                   key: mongodb_db_name
-            - name: MONGODB_CLUSTER
-              valueFrom:
-                configMapKeyRef:
-                  name: artist-library-config-map
-                  key: mongodb_cluster
           resources:
             limits:
               cpu: 300m
@@ -61,7 +47,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
-            failureThreshold: 20
+            failureThreshold: 30
             periodSeconds: 3
           livenessProbe:
             httpGet:
