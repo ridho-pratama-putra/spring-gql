@@ -5,9 +5,7 @@ import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.ArtistRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-@RunWith(MockitoJUnitRunner.class)
 class ArtistLibraryServiceTest {
 
     @Autowired
