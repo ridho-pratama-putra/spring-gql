@@ -29,7 +29,6 @@ public class MDCFilter implements Filter {
             addXRequestId(req);
             LOGGER.info("path: {}, method: {}, query {}",
                     req.getRequestURI(), req.getMethod(), req.getQueryString());
-            res.setHeader(X_REQUEST_ID, MDC.get(X_REQUEST_ID));
             chain.doFilter(request, response);
         } finally {
             LOGGER.info("statusCode {}, path: {}, method: {}, query {}",

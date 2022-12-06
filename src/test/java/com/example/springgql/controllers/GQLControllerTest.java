@@ -5,9 +5,11 @@ import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.services.ArtistLibraryService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
@@ -15,6 +17,7 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 import java.util.Arrays;
 
 @GraphQlTest
+@EnableAutoConfiguration
 class GQLControllerTest {
 
     @Autowired
@@ -28,6 +31,9 @@ class GQLControllerTest {
 
     @MockBean
     HttpServletRequest httpServletRequest;
+
+    @MockBean
+    HttpServletResponse httpServletResponse;
 
     @Test
     public void artist_shouldReturnListOfArtist_whenCalled() {

@@ -5,6 +5,7 @@ import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.ArtistRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,15 +18,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ArtistLibraryService {
-    ArtistRepository repository;
-
-    ArtistLibraryService(ArtistRepository repository) {
-        this.repository = repository;
-    }
+    final ArtistRepository repository;
+    final RestTemplate restTemplate;
 
     public Artist saveArtist(ArtistInput artistInput) {
-        RestTemplate restTemplate = new RestTemplate();
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         HttpEntity<Album> request = null;
         try {

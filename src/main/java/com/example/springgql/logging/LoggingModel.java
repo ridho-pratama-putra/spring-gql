@@ -10,6 +10,7 @@ import java.util.Map;
 public class LoggingModel {
     String event;
     String eventId;
+    String spanId;
     Long startTime;
     Long finishTime;
     Long elapsedTime;
