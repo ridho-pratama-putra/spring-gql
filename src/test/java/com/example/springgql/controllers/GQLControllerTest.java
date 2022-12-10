@@ -57,7 +57,6 @@ class GQLControllerTest {
     public void init() {
         Mockito.when(tracer.nextSpan()).thenReturn(span);
         Mockito.when(tracer.nextSpan().context()).thenReturn(traceContext);
-        Mockito.when(tracer.nextSpan().context().spanId()).thenReturn("sfgagsd");
     }
 
     @Test

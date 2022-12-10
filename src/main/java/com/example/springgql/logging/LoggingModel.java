@@ -9,7 +9,7 @@ import java.util.Map;
 @Data
 public class LoggingModel {
     String event;
-    String eventId;
+    String traceId;
     String spanId;
     Long startTime;
     Long finishTime;

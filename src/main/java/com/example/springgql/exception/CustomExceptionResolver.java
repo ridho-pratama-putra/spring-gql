@@ -20,7 +20,7 @@ public class CustomExceptionResolver extends DataFetcherExceptionResolverAdapter
     @Override
     protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
         Map<String, Object> extensionCustom = new HashMap<>();
-        extensionCustom.put("executionId", tracer.nextSpan().context().spanId());
+        extensionCustom.put("traceId", tracer.nextSpan().context().traceId());
         return GraphqlErrorBuilder.newError()
                 .errorType(ErrorType.NOT_FOUND)
                 .message(ex.getMessage())

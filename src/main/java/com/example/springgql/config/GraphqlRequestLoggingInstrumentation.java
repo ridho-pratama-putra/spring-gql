@@ -30,14 +30,16 @@ public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation 
     @Override
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
         Instant start = Instant.now();
-        String executionId = tracer.nextSpan().context().spanId();
+        String traceId = tracer.nextSpan().context().traceId();
+        String spanId = tracer.nextSpan().context().spanId();
         return SimpleInstrumentationContext.whenCompleted(((executionResult, throwable) -> {
             Duration duration = Duration.between(start, Instant.now(clock));
             List<GraphQLError> errors = executionResult.getErrors();
             if (errors.isEmpty()) {
                 loggingService.write(LoggingModel.builder()
                         .event("GraphQL")
-                        .spanId(executionId)
+                        .traceId(traceId)
+                        .spanId(spanId)
                         .clientType(request.getHeader("user-agent"))
                         .requestBody(parameters.getQuery())
                         .startTime(start.toEpochMilli())
@@ -49,7 +51,8 @@ public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation 
             } else {
                 loggingService.write(LoggingModel.builder()
                         .event("GraphQL")
-                        .spanId(executionId)
+                        .traceId(traceId)
+                        .spanId(spanId)
                         .clientType(request.getHeader("user-agent"))
                         .requestBody(parameters.getQuery())
                         .startTime(start.toEpochMilli())
