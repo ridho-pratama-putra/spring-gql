@@ -4,17 +4,25 @@ import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.services.ArtistLibraryService;
-import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.TraceContext;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.graphql.test.tester.GraphQlTester;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
 @GraphQlTest
+@EnableAutoConfiguration
 class GQLControllerTest {
 
     @Autowired
@@ -28,6 +36,28 @@ class GQLControllerTest {
 
     @MockBean
     HttpServletRequest httpServletRequest;
+
+    @MockBean
+    HttpServletResponse httpServletResponse;
+
+    @MockBean
+    Tracer tracer;
+
+    @MockBean
+    Span span;
+
+    @MockBean
+    TraceContext traceContext;
+
+    @MockBean
+    RestTemplate restTemplate;
+
+    @BeforeEach
+    public void init() {
+        Mockito.when(tracer.nextSpan()).thenReturn(span);
+        Mockito.when(tracer.nextSpan().context()).thenReturn(traceContext);
+        Mockito.when(tracer.nextSpan().context().spanId()).thenReturn("sfgagsd");
+    }
 
     @Test
     public void artist_shouldReturnListOfArtist_whenCalled() {

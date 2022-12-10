@@ -3,15 +3,13 @@
 
     <property name="LOGS" value="./logs" />
 
-    <appender name="Console"
-              class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %white(%d{ISO8601}) %highlight(%-5level) [%green(%t)] %yellow(%C{1}.): %msg%n%throwable
+                %white(%d{ISO8601}) %highlight(%level) [%green(%t)] %yellow(%C): %msg%n%throwable
             </Pattern>
         </layout>
     </appender>
-
     <appender name="RollingFile"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/spring-boot-logger.log</file>
@@ -32,14 +30,11 @@
         </rollingPolicy>
     </appender>
 
-    <!-- LOG everything at INFO level -->
-    <root level="info">
-        <appender-ref ref="Console" />
+    <root level="INFO">
+        <appender-ref ref="ConsoleAppender"/>
     </root>
 
-    <!-- LOG "com.baeldung*" at TRACE level -->
     <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="RollingFile" />
     </logger>
-
 </configuration>

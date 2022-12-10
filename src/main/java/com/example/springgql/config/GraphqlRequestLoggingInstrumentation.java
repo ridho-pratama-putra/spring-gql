@@ -8,16 +8,16 @@ import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -25,20 +25,19 @@ public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation 
     private final Clock clock;
     private final LoggingService loggingService;
     private final HttpServletRequest request;
+    private final Tracer tracer;
 
     @Override
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
         Instant start = Instant.now();
-        String executionId = parameters.getExecutionInput().getExecutionId().toString();
+        String executionId = tracer.nextSpan().context().spanId();
         return SimpleInstrumentationContext.whenCompleted(((executionResult, throwable) -> {
             Duration duration = Duration.between(start, Instant.now(clock));
             List<GraphQLError> errors = executionResult.getErrors();
             if (errors.isEmpty()) {
-                Map<Object, Object> data = executionResult.getData();
-                data.put("executionId", executionId);
                 loggingService.write(LoggingModel.builder()
                         .event("GraphQL")
-                        .eventId(executionId)
+                        .spanId(executionId)
                         .clientType(request.getHeader("user-agent"))
                         .requestBody(parameters.getQuery())
                         .startTime(start.toEpochMilli())
@@ -50,7 +49,7 @@ public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation 
             } else {
                 loggingService.write(LoggingModel.builder()
                         .event("GraphQL")
-                        .eventId(executionId)
+                        .spanId(executionId)
                         .clientType(request.getHeader("user-agent"))
                         .requestBody(parameters.getQuery())
                         .startTime(start.toEpochMilli())
