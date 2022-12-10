@@ -1,5 +1,6 @@
 package com.example.springgql.controllers;
 
+import brave.Tracing;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;

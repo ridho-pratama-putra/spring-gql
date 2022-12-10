@@ -1,6 +1,7 @@
 package com.example.springgql.services;
 
 import com.example.springgql.enums.CategoryEnum;
+import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
@@ -33,12 +34,15 @@ public class ArtistLibraryService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        ResponseEntity<Album> albumResponseEntity = restTemplate.postForEntity("http://localhost:8082/album", request, Album.class);
-        Artist entity = Artist.builder()
-                .name(artistInput.getName())
-                .albums(null)
-                .build();
-        return repository.save(entity);
+        ResponseEntity<Album> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Album.class);
+        if(newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
+            Artist entity = Artist.builder()
+                    .name(artistInput.getName())
+                    .albums(null)
+                    .build();
+            return repository.save(entity);
+        }
+        throw new DataNotCreatedException(Artist.class);
     }
 
     public List<Artist> getAllArtist() {

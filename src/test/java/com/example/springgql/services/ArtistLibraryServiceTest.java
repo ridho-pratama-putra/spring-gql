@@ -1,5 +1,6 @@
 package com.example.springgql.services;
 
+import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.ArtistRepository;
@@ -9,6 +10,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -31,11 +34,23 @@ class ArtistLibraryServiceTest {
         String expectedName = "springGQLArtist";
         Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
         ArtistInput input = new ArtistInput(expectedName);
-        Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(null);
+        Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         Artist actualResult = service.saveArtist(input);
 
         Assertions.assertEquals(expectedName, actualResult.getName());
+    }
+
+    @Test
+    public void saveArtist_shouldThrowExceptionDataFailedToCreate_whenFailedToDoPostForEntity() {
+        Assertions.assertThrows(DataNotCreatedException.class, () -> {
+            String expectedName = "springGQLArtist";
+            Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
+            ArtistInput input = new ArtistInput(expectedName);
+            Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+
+            service.saveArtist(input);
+        });
     }
 
     @Test
