@@ -10,6 +10,11 @@
             </Pattern>
         </layout>
     </appender>
+
+    <appender name="JsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
     <appender name="RollingFile"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/spring-boot-logger.log</file>
@@ -36,5 +41,8 @@
 
     <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="RollingFile" />
+    </logger>
+    <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
+        <appender-ref ref="JsonConsoleAppender" />
     </logger>
 </configuration>
