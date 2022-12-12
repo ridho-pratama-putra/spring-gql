@@ -41,8 +41,6 @@
 
     <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="RollingFile" />
-    </logger>
-    <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="JsonConsoleAppender" />
     </logger>
 
