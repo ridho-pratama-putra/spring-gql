@@ -18,10 +18,10 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-class ArtistLibraryServiceTest {
+class ArtistServiceTest {
 
     @Autowired
-    ArtistLibraryService service;
+    ArtistService service;
 
     @MockBean
     ArtistRepository repository;
@@ -30,26 +30,26 @@ class ArtistLibraryServiceTest {
     private RestTemplate restTemplate;
 
     @Test
-    public void saveArtist_shouldReturnCreatedArtist_whenSuccessCreate() {
+    public void saveArtistInput_shouldReturnCreatedArtist_whenSuccessCreate() {
         String expectedName = "springGQLArtist";
         Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
         ArtistInput input = new ArtistInput(expectedName);
         Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        Artist actualResult = service.saveArtist(input);
+        Artist actualResult = service.saveArtistInput(input);
 
         Assertions.assertEquals(expectedName, actualResult.getName());
     }
 
     @Test
-    public void saveArtist_shouldThrowExceptionDataFailedToCreate_whenFailedToDoPostForEntity() {
+    public void saveArtistInput_shouldThrowExceptionDataFailedToCreate_whenFailedToDoPostForEntity() {
         Assertions.assertThrows(DataNotCreatedException.class, () -> {
             String expectedName = "springGQLArtist";
             Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
             ArtistInput input = new ArtistInput(expectedName);
             Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
 
-            service.saveArtist(input);
+            service.saveArtistInput(input);
         });
     }
 

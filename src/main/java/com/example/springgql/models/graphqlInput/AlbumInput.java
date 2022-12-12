@@ -1,10 +1,9 @@
-package com.example.springgql.models;
+package com.example.springgql.models.graphqlInput;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
@@ -12,8 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 @Builder
 @Data
-public class Artist {
-    @Id
-    String id;
-    String name;
+public class AlbumInput {
+    String title;
+    String releaseDate;
+    String totalSong;
+    String duration;
+    ArtistInput artist;
 }

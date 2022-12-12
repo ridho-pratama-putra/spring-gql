@@ -1,6 +1,5 @@
 package com.example.springgql.services;
 
-import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
@@ -14,31 +13,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ArtistLibraryService {
+public class ArtistService {
     final ArtistRepository repository;
     final RestTemplate restTemplate;
 
-    public Artist saveArtist(ArtistInput artistInput) {
-        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+    public Artist saveArtistInput(ArtistInput artistInput) {
         HttpEntity<Album> request = null;
-        try {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("X-Request-ID", MDC.get("X-Request-ID"));
-            request = new HttpEntity<>(new Album("krupuk", "rambak", CategoryEnum.ROCK, date.parse("19/08/1945")), httpHeaders);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("X-Request-ID", MDC.get("X-Request-ID"));
+        request = new HttpEntity<>(new Album(), httpHeaders);
         ResponseEntity<Album> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Album.class);
         if(newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
             Artist entity = Artist.builder()
                     .name(artistInput.getName())
-                    .albums(null)
                     .build();
             return repository.save(entity);
         }
@@ -47,5 +38,13 @@ public class ArtistLibraryService {
 
     public List<Artist> getAllArtist() {
         return repository.findAll();
+    }
+
+    public Artist getArtistByName(String name) {
+        return repository.findItemByName(name);
+    }
+
+    public Artist saveArtist(Artist artistByName) {
+        return repository.save(artistByName);
     }
 }

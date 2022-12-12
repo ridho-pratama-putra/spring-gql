@@ -1,25 +1,36 @@
 type Query {
     artistById(id: ID): Artist!
     artists: [Artist]
+    albumsByArtistId(id: ID): [Album]
 }
 
 type Mutation {
     createArtist(artistInput: ArtistInput): Artist
+    createAlbumOnArtist(albumInput: AlbumInput): Album
 }
 
 input ArtistInput {
     name: String!
 }
 
+input AlbumInput {
+    title: String!
+    releaseDate: String!
+    artist: ArtistInput!
+}
+
 type Artist {
-    id: ID!
+    id: ID
     name: String!
     albums: [Album]
 }
 
 type Album {
+    id: ID
     title: String!
-    date: String!
+    categoryEnum: String!
+    addedDate: String!
     category: String!
+    releaseDate: String!
+    duration: String!
 }
-

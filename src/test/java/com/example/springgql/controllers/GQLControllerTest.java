@@ -1,10 +1,11 @@
 package com.example.springgql.controllers;
 
-import brave.Tracing;
+import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
-import com.example.springgql.services.ArtistLibraryService;
+import com.example.springgql.services.AlbumService;
+import com.example.springgql.services.ArtistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,6 +22,9 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @GraphQlTest
 @EnableAutoConfiguration
@@ -30,7 +34,10 @@ class GQLControllerTest {
     GraphQlTester graphQlTester;
 
     @MockBean
-    ArtistLibraryService service;
+    ArtistService artistService;
+
+    @MockBean
+    AlbumService albumService;
 
     @MockBean
     LoggingService loggingService;
@@ -89,7 +96,7 @@ class GQLControllerTest {
 
     @Test
     public void artist_shouldReturnErrorInBody_whenServiceReturnException() {
-        Mockito.when(service.getAllArtist()).thenThrow(NullPointerException.class);
+        Mockito.when(artistService.getAllArtist()).thenThrow(NullPointerException.class);
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
@@ -103,7 +110,7 @@ class GQLControllerTest {
 
     @Test
     public void artist_shouldReturnErrorInBody_whenQueryTypo() {
-        Mockito.when(service.getAllArtist()).thenThrow(NullPointerException.class);
+        Mockito.when(artistService.getAllArtist()).thenThrow(NullPointerException.class);
         String request = "query {\n" +
                 "    artiss {\n" +
                 "        name\n" +
@@ -119,8 +126,7 @@ class GQLControllerTest {
     public void artistById_shouldReturnSingleArtisWithAlbum_whenCalled() {
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
-                "        id\n" +
-                "   " +
+                "     id\n" +
                 "     name\n" +
                 "        albums {\n" +
                 "           title\n" +
@@ -138,8 +144,9 @@ class GQLControllerTest {
     }
 
     @Test
-    public void artist_shouldReturnListOfArtistWithTransaction_whenCalled() {
-        Mockito.when(service.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", Arrays.asList(new Album()))));
+    public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
+        Mockito.when(albumService.getAlbumsByArtistId(Mockito.any())).thenReturn(Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
@@ -156,5 +163,55 @@ class GQLControllerTest {
                 .path("artists.[0].albums")
                 .entityList(Album.class)
         ;
+    }
+
+    @Test
+    public void createAlbumOnArtist_shouldReturnCreatedAlbum_whenCalled() {
+        Mockito.when(albumService.saveAlbumOnArtist(Mockito.any())).thenReturn(Album.builder()
+                .title("album1")
+                .addedDate(new Date())
+                .categoryEnum(CategoryEnum.ROCK)
+                .releaseDate("11/12/1997")
+                .build());
+        Map<String, Object> variable = new HashMap<>();
+        HashMap<String, String> artistInput = new HashMap<>();
+        artistInput.put("name", "endank");
+        variable.put("title", "album1");
+        variable.put("releaseDate", "11/12/1997");
+        variable.put("artist", artistInput);
+
+        String request = "mutation($input: AlbumInput!) {" +
+                "  createAlbumOnArtist(albumInput: $input) {" +
+                "    title" +
+                "    releaseDate" +
+                "  }" +
+                "}";
+
+        graphQlTester.document(request)
+                .variable("input", variable)
+                .execute()
+                .path("createAlbumOnArtist")
+                .entity(Album.class)
+                .path("createAlbumOnArtist.title")
+                .entity(String.class)
+        ;
+    }
+
+    @Test
+    public void albumsByArtistId_shouldReturnSingleArtisWithAlbum_whenCalled() {
+        Mockito.when(albumService.getAlbumsByArtistId(Mockito.any())).thenReturn(Arrays.asList(new Album(null, "tutel", null, null, null, null, null, null)));
+        String request = "query albumsByArtistId($id: ID){\n" +
+                "    albumsByArtistId(id: $id) {\n" +
+                "        title\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .variable("id", "someValue")
+                .execute()
+                .path("albumsByArtistId")
+                .entityList(Album.class)
+                .path("albumsByArtistId[0].title")
+                .entity(String.class);
     }
 }

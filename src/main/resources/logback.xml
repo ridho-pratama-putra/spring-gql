@@ -45,4 +45,9 @@
     <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="JsonConsoleAppender" />
     </logger>
+
+    <logger name="org.springframework.data.mongodb.core.MongoTemplate" level="debug">
+        <appender-ref ref="ConsoleAppender" />
+    </logger>
+
 </configuration>
