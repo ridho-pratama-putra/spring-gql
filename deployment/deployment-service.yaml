@@ -60,7 +60,7 @@ spec:
               path: /actuator/health/readiness
               port: 8080
             initialDelaySeconds: 0 #(default)
-            periodSeconds: 10 #(default)
+            periodSeconds: 3 #(default)
 ---
 kind: Service
 apiVersion: v1
