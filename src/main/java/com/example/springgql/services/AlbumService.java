@@ -1,11 +1,11 @@
 package com.example.springgql.services;
 
+import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.repositories.AlbumRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AlbumService {
@@ -24,6 +23,9 @@ public class AlbumService {
     public Album saveAlbumOnArtist(AlbumInput albumInput) {
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         Artist artistByName = artistService.getArtistByName(albumInput.getArtist().getName());
+        if (artistByName == null) {
+            throw new DataNotFoundException("Data not found");
+        }
         Album entity;
         try {
             entity = Album.builder()
