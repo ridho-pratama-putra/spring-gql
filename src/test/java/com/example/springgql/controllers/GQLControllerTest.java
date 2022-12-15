@@ -145,7 +145,7 @@ class GQLControllerTest {
 
     @Test
     public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", null)));
         Mockito.when(albumService.getAlbumsByArtistId(Mockito.any())).thenReturn(Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
         String request = "query {\n" +
                 "    artists {\n" +
