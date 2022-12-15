@@ -11,16 +11,11 @@
         </layout>
     </appender>
 
-    <appender name="JsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-    </appender>
-
     <appender name="RollingFile"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/spring-boot-logger.log</file>
         <encoder
-                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d %p %C{1}. [%t] %m%n</Pattern>
+                class="net.logstash.logback.encoder.LogstashEncoder">
         </encoder>
 
         <rollingPolicy
@@ -41,11 +36,5 @@
 
     <logger name="com.example.springgql.logging.LoggingService" level="info" additivity="false">
         <appender-ref ref="RollingFile" />
-        <appender-ref ref="JsonConsoleAppender" />
     </logger>
-
-    <logger name="org.springframework.data.mongodb.core.MongoTemplate" level="debug">
-        <appender-ref ref="ConsoleAppender" />
-    </logger>
-
 </configuration>
