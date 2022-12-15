@@ -2,8 +2,10 @@ package com.example.springgql.services;
 
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
+import com.example.springgql.models.QAlbum;
 import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.repositories.AlbumRepository;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,10 +50,10 @@ public class AlbumService {
     }
 
     public List<Album> getAllAlbums() {
-//        QAlbum qUser = new QAlbum("album");
-//        Predicate predicate = qUser.title.isNotNull();
-//        List<Album> users = (List<Album>) repository.findAll(predicate);
-        List<Album> users = new ArrayList<>();
+        QAlbum qUser = new QAlbum("album");
+        Predicate predicate = qUser.title.isNotNull();
+        List<Album> users = (List<Album>) repository.findAll(predicate);
+//        List<Album> users = new ArrayList<>();
         return users;
     }
 }
