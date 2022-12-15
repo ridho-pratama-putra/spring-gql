@@ -10,7 +10,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import javax.persistence.Entity;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @QueryEntity
 @Document
-@Entity
 @Builder
 @Data
 public class Album {
