@@ -2,15 +2,20 @@ package com.example.springgql.services;
 
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
+import com.example.springgql.models.QAlbum;
 import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.repositories.AlbumRepository;
+import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AlbumService {
@@ -36,6 +41,18 @@ public class AlbumService {
     }
 
     public List<Album> getAlbumsByArtistId(String id) {
-        return repository.findAllByArtistId(id);
+        Iterable<Album> allByArtistId = repository.findAllByArtistId(id);
+        List<Album> list = new ArrayList<>();
+
+        // Add each element of iterator to the List
+        allByArtistId.forEach(list::add);
+        return list;
+    }
+
+    public List<Album> getAllAlbums() {
+        QAlbum qUser = new QAlbum("album");
+        Predicate predicate = qUser.title.isNotNull();
+        List<Album> users = (List<Album>) repository.findAll(predicate);
+        return users;
     }
 }
