@@ -4,9 +4,9 @@ import com.example.springgql.models.Artist;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import org.springframework.stereotype.Repository;
+import org.springframework.graphql.data.GraphQlRepository;
 
-@Repository
+@GraphQlRepository
 public interface ArtistRepository extends MongoRepository<Artist, String>, QuerydslPredicateExecutor<Artist> {
     @Query("{name:'?0'}")
     Artist findItemByName(String name);

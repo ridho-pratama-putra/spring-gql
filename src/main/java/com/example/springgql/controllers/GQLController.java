@@ -57,14 +57,10 @@ public class GQLController {
         return Mono.just(albumService.saveAlbumOnArtist(albumInput));
     }
 
-//    @SchemaMapping(typeName = "User")
-//    Flux<Transaction> transactions() throws ParseException {
-//        logger.info("Transactions called when query need transactions to show");
-//        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-//        return Flux.fromIterable(Arrays.asList(
-//            new Transaction("krupuk", new Category("kebutuhan harian"), Double.parseDouble("1000"), date.parse("19/08/1945"))
-//            , new Transaction("jipang", new Category("kebutuhan harian"), Double.parseDouble("2000"), date.parse("19/08/1945"))
-//        ));
+//    @SchemaMapping(typeName = "Artist")
+//    Flux<Album> albums(Artist artist) {
+//        System.out.println("Transactions called when query need transactions to show");
+//        return Flux.fromIterable(albumService.getAlbumsByArtistId(artist.getId()));
 //    }
 
     @BatchMapping
