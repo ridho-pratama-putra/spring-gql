@@ -21,10 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @GraphQlTest
 @EnableAutoConfiguration
@@ -166,6 +163,30 @@ class GQLControllerTest {
     }
 
     @Test
+    public void createArtist_shouldReturnCreatedArtist_whenCalled() {
+        Mockito.when(artistService.saveArtistInput(Mockito.any())).thenReturn(Artist.builder()
+                .name("endank")
+                .build());
+        HashMap<String, String> artistInput = new HashMap<>();
+        artistInput.put("name", "endank");
+
+        String request = "mutation($input: ArtistInput!) {" +
+                "  createArtist(artistInput: $input) {" +
+                "    name" +
+                "  }" +
+                "}";
+
+        graphQlTester.document(request)
+                .variable("input", artistInput)
+                .execute()
+                .path("createArtist")
+                .entity(Artist.class)
+                .path("createArtist.name")
+                .entity(String.class)
+        ;
+    }
+
+    @Test
     public void createAlbumOnArtist_shouldReturnCreatedAlbum_whenCalled() {
         Mockito.when(albumService.saveAlbumOnArtist(Mockito.any())).thenReturn(Album.builder()
                 .title("album1")
@@ -213,5 +234,23 @@ class GQLControllerTest {
                 .entityList(Album.class)
                 .path("albumsByArtistId[0].title")
                 .entity(String.class);
+    }
+
+    @Test
+    public void allAlbums_shouldReturnListAlbumExists_whenCalled() {
+        String request = "query {\n" +
+                "    allAlbums {\n" +
+                "       title\n" +
+                "    }\n" +
+                "}";
+        Mockito.when(albumService.getAllAlbums()).thenReturn(Arrays.asList(new Album(null, "tutel", null, null, null, null, null, null)));
+
+        graphQlTester.document(request)
+                .execute()
+                .path("allAlbums")
+                .entityList(Album.class)
+                .path("allAlbums[0].title")
+                .entity(String.class)
+        ;
     }
 }

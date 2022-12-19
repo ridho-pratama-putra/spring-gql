@@ -44,7 +44,4 @@ public class ArtistService {
         return repository.findItemByName(name);
     }
 
-    public Artist saveArtist(Artist artistByName) {
-        return repository.save(artistByName);
-    }
 }

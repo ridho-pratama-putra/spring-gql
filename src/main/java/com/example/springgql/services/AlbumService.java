@@ -5,6 +5,7 @@ import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.repositories.AlbumRepository;
+import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,9 @@ public class AlbumService {
 
     public List<Album> getAlbumsByArtistId(String id) {
         Iterable<Album> all = repository.findAllByArtistId(id);
+        if (Iterables.isEmpty(all)) {
+            throw new DataNotFoundException("Data not found");
+        }
         List<Album> result = new ArrayList<>();
         all.forEach(result::add);
         return result;
