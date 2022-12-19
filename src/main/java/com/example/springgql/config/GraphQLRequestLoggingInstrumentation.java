@@ -21,7 +21,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class GraphqlRequestLoggingInstrumentation extends SimpleInstrumentation {
+public class GraphQLRequestLoggingInstrumentation extends SimpleInstrumentation {
     private final Clock clock;
     private final LoggingService loggingService;
     private final HttpServletRequest request;
