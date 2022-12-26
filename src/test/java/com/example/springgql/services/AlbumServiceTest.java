@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -62,7 +63,9 @@ class AlbumServiceTest {
     @Test
     public void getAlbumsByArtistId_shouldReturnEntity_whenDataIsExist() {
         String artistId = "uniqueArtistId";
-        Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(List.of(new Album()));
+        ArrayList<Album> albums = new ArrayList<>();
+        albums.add(new Album());
+        Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(albums);
 
         List<Album> actualResult = service.getAlbumsByArtistId(artistId);
         Assertions.assertNotNull(actualResult);
@@ -72,7 +75,8 @@ class AlbumServiceTest {
     public void getAlbumsByArtistId_shouldReturnDataNotFoundException_whenDataIsNotExist() {
         Assertions.assertThrows(DataNotFoundException.class, () -> {
             String artistId = "uniqueArtistId";
-            Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(List.of());
+            ArrayList<Album> albums = new ArrayList<>();
+            Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(albums);
 
             service.getAlbumsByArtistId(artistId);
         });

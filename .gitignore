@@ -30,12 +30,6 @@ build/
 
 ### VS Code ###
 .vscode/
-/environments
-/environments/sit.env
-/deployment/mongodb-secret.yaml
-/deployment/spring-gql-secret.yaml
-/deployment/app-secret-tls.yaml
-/deployment
 /logs
 /.mvn
 .DS_STORE

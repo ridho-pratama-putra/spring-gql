@@ -28,21 +28,31 @@ spec:
             - containerPort: 8080
               protocol: TCP
           env:
-            - name: MONGODB_URI
+#            - name: MONGODB_URI
+#              valueFrom:
+#                secretKeyRef:
+#                  name: artist-library-secret
+#                  key: mongodb-uri
+            - name: MONGODB_PREFIX_URL
               valueFrom:
-                secretKeyRef:
-                  name: artist-library-secret
-                  key: mongodb-uri
+                configMapKeyRef:
+                  name: artist-library-config-map
+                  key: mongodb_prefix_url
+            - name: MONGODB_CLUSTER
+              valueFrom:
+                configMapKeyRef:
+                  name: artist-library-config-map
+                  key: mongodb_cluster
             - name: MONGODB_DATABASE
               valueFrom:
                 configMapKeyRef:
                   name: artist-library-config-map
                   key: mongodb_db_name
           resources:
-            limits:
-              cpu: 300m
-            requests:
-              cpu: 200m
+#            limits:
+#              cpu: 300m
+#            requests:
+#              cpu: 200m
           startupProbe:
             httpGet:
               path: /actuator/health

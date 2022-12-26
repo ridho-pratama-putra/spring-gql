@@ -3,6 +3,31 @@ kind: Namespace
 metadata:
   name: database
 ---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mongodb-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: mongodb-persistent-volume
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,9 +47,12 @@ spec:
     spec:
       containers:
         - name: mongodb-container
-          image: mongo
+          image: bitnami/mongodb:6.0.3-debian-11-r0
           ports:
             - containerPort: 27017
+          volumeMounts: # Mounting volume obtained from Persistent Volume Claim
+            - name: mongodb-persistent-volume
+              mountPath: /data/db #This is the path in the container on which the mounting will take place.
 #          env:
 #            - name: MONGODB_USERNAME
 #              valueFrom:
@@ -36,6 +64,10 @@ spec:
 #                secretKeyRef:
 #                  name: mongodb-secret
 #                  key: mongodb-password
+      volumes:
+        - name: mongodb-persistent-volume # Obtaining 'volume' from PVC
+          persistentVolumeClaim:
+            claimName: mongodb-persistent-volume-claim
 ---
 kind: Service
 apiVersion: v1
@@ -48,5 +80,5 @@ spec:
   ports:
     - name: mongodb-service
       protocol: TCP
-      port: 27017
+      port: 27017 # port for client to access
       targetPort: 27017 # port of pod
