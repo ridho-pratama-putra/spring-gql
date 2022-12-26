@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,7 +66,15 @@ public class GQLController {
 
     @BatchMapping
     Map<Artist, List<Album>> albums(List<Artist> artists) {
-        return artists.stream().collect(Collectors.toMap(artist -> artist, artist -> albumService.getAlbumsByArtistId(artist.getId())));
+        return artists.stream().collect(Collectors.toMap(artist -> artist, artist -> {
+            List<Album> albumsByArtistId = new ArrayList<>();
+            try {
+                albumsByArtistId = albumService.getAlbumsByArtistId(artist.getId());
+            } catch (DataNotFoundException exception) {
+                exception.printStackTrace();
+            }
+            return albumsByArtistId;
+        }));
     }
 
     @QueryMapping

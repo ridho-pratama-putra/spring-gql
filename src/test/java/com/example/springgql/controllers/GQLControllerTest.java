@@ -1,6 +1,7 @@
 package com.example.springgql.controllers;
 
 import com.example.springgql.enums.CategoryEnum;
+import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
@@ -251,6 +252,52 @@ class GQLControllerTest {
                 .entityList(Album.class)
                 .path("allAlbums[0].title")
                 .entity(String.class)
+        ;
+    }
+
+    @Test
+    public void albums_shouldReturnEmptyArray_whenArtistDoesntHaveAlbum() {
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", null)));
+        Mockito.when(albumService.getAlbumsByArtistId(Mockito.anyString())).thenThrow(DataNotFoundException.class);
+        String request = "query {\n" +
+                "    artists {\n" +
+                "        name\n" +
+                "        albums {\n" +
+                "           title\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .execute()
+                .path("artists")
+                .entityList(Artist.class)
+                .path("artists.[0].albums")
+                .entityList(Album.class).hasSize(0)
+        ;
+    }
+
+    @Test
+    public void albums_shouldReturnNotEmptyArray_whenArtistDoesHaveAlbum() {
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", null)));
+        Mockito.when(albumService.getAlbumsByArtistId(Mockito.anyString())).thenReturn(Arrays.asList(Album.builder().title("judi").build()));
+        String request = "query {\n" +
+                "    artists {\n" +
+                "        name\n" +
+                "        albums {\n" +
+                "           title\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        graphQlTester.document(request)
+                .execute()
+                .path("artists")
+                .entityList(Artist.class)
+                .path("artists.[0].albums")
+                .entityList(Album.class).hasSize(1)
+                .path("artists.[0].albums.[0].title")
+                .equals("judi")
         ;
     }
 }
