@@ -71,7 +71,7 @@ public class GQLController {
             try {
                 albumsByArtistId = albumService.getAlbumsByArtistId(artist.getId());
             } catch (DataNotFoundException exception) {
-                exception.printStackTrace();
+
             }
             return albumsByArtistId;
         }));

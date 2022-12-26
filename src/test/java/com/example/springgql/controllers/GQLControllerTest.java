@@ -143,7 +143,7 @@ class GQLControllerTest {
 
     @Test
     public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", null)));
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
         Mockito.when(albumService.getAlbumsByArtistId(Mockito.any())).thenReturn(Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
         String request = "query {\n" +
                 "    artists {\n" +
@@ -257,7 +257,7 @@ class GQLControllerTest {
 
     @Test
     public void albums_shouldReturnEmptyArray_whenArtistDoesntHaveAlbum() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", null)));
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
         Mockito.when(albumService.getAlbumsByArtistId(Mockito.anyString())).thenThrow(DataNotFoundException.class);
         String request = "query {\n" +
                 "    artists {\n" +
@@ -279,7 +279,7 @@ class GQLControllerTest {
 
     @Test
     public void albums_shouldReturnNotEmptyArray_whenArtistDoesHaveAlbum() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", null)));
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
         Mockito.when(albumService.getAlbumsByArtistId(Mockito.anyString())).thenReturn(Arrays.asList(Album.builder().title("judi").build()));
         String request = "query {\n" +
                 "    artists {\n" +

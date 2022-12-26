@@ -21,6 +21,4 @@ public class Artist {
     @Id
     String id;
     String name;
-    @OneToMany
-    List<Album> albumsList;
 }
