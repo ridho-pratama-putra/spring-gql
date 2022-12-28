@@ -12,6 +12,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,5 +83,22 @@ class AlbumServiceTest {
 
             service.getAlbumsByArtistId(artistId);
         });
+    }
+
+    @Test
+    public void getAlbumsByAfterCursor_shouldCallfindAllByIdGreaterThan_whenAfterCursorIsNotEmptyValue() {
+        service.getAlbumsByAfterCursor("NjNhOWIyYzY5MzRhNzk3ZGZlMzMyMmY5", 2);
+
+        Mockito.verify(repository, Mockito.times(1)).findAllByIdGreaterThan(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void getAlbumsByAfterCursor_shouldCallfindAllByIdGreaterThan_whenAfterCursorIsEmptyValue() {
+        Page page = new PageImpl(new ArrayList<>());
+        Mockito.when(repository.findAll(Mockito.any(Pageable.class))).thenReturn(page);
+
+        service.getAlbumsByAfterCursor(null, 2);
+
+        Mockito.verify(repository, Mockito.times(1)).findAll((Pageable) Mockito.any());
     }
 }

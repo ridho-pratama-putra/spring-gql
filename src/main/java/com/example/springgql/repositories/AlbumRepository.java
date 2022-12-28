@@ -1,6 +1,8 @@
 package com.example.springgql.repositories;
 
 import com.example.springgql.models.Album;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -14,4 +16,5 @@ public interface AlbumRepository extends MongoRepository<Album, String>, Queryds
     @Query(value = "{'artist._id': '?0'}")
     List<Album> findAllByArtistId(String id);
 
+    List<Album> findAllByIdGreaterThan(ObjectId lastId, Pageable pageable);
 }

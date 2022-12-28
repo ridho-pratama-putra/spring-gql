@@ -1,6 +1,7 @@
 package com.example.springgql.services;
 
 import com.example.springgql.exception.DataNotCreatedException;
+import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,4 +46,11 @@ public class ArtistService {
         return repository.findItemByName(name);
     }
 
+    public Artist getArtistById(String id) {
+        Optional<Artist> byId = repository.findById(id);
+        if (!byId.isPresent()) {
+            throw new DataNotFoundException("not foung");
+        }
+        return byId.get();
+    }
 }

@@ -8,6 +8,9 @@ import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.services.AlbumService;
 import com.example.springgql.services.ArtistService;
+import com.example.springgql.utils.CursorUtil;
+import graphql.relay.*;
+import graphql.schema.DataFetchingEnvironment;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -38,7 +41,7 @@ public class GQLController {
         if ("alex".equals(id)) {
             throw new DataNotFoundException("Data not found");
         }
-        return Mono.just(Artist.builder().id(id).name("sumarno").build());
+        return Mono.just(artistService.getArtistById(id));
     }
 
     @QueryMapping
@@ -71,7 +74,7 @@ public class GQLController {
             try {
                 albumsByArtistId = albumService.getAlbumsByArtistId(artist.getId());
             } catch (DataNotFoundException exception) {
-                exception.printStackTrace();
+
             }
             return albumsByArtistId;
         }));
@@ -83,7 +86,7 @@ public class GQLController {
     }
 
     @QueryMapping
-    Flux<Album> allAlbums() {
-        return Flux.fromIterable(albumService.getAllAlbums());
+    Connection<Album> allAlbums(@Argument(name = "first") int first, @Argument(name = "after") String after) {
+        return albumService.getAllAlbums(after, first);
     }
 }
