@@ -79,9 +79,9 @@ public class AlbumService {
         return new DefaultConnection<>(defaultEdges, defaultPageInfo);
     }
 
-    private List<Album> getAlbumsByAfterCursor(String afterCursor, int limit) {
+    public List<Album> getAlbumsByAfterCursor(String afterCursor, int limit) {
         if (afterCursor == null || afterCursor.isEmpty()) {
-            return repository.findAll();
+            return repository.findAll(Pageable.ofSize(limit)).toList();
         }
         String afterID = CursorUtil.convertIdFromCursor(afterCursor);
         ObjectId objectId = new ObjectId(afterID);

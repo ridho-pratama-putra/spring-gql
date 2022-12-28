@@ -7,6 +7,8 @@ import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
 import com.example.springgql.services.AlbumService;
 import com.example.springgql.services.ArtistService;
+import com.example.springgql.utils.CursorUtil;
+import graphql.relay.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @GraphQlTest
 @EnableAutoConfiguration
@@ -236,5 +239,61 @@ class GQLControllerTest {
                 .entityList(Album.class)
                 .path("albumsByArtistId[0].title")
                 .entity(String.class);
+    }
+
+    @Test
+    public void allAlbums_shouldReturnEmptyConnections_whenCalled() {
+        int first = 2;
+        String firstData = "6396c71e80040f6cf5d85586";
+        String secData = "639aa033b70a8f582f5b8b3b";
+        String thirdData = "639ad946aedd867645eb75d9";
+        String fourthData = "639ad9e1aedd867645eb75de";
+        String after = secData;
+
+        String request = "query allAlbums($first: Int, $after: String){\n" +
+                "    allAlbums(first: $first, after: $after) {\n" +
+                "        edges {\n" +
+                "            cursor\n" +
+                "            node {\n" +
+                "                id\n" +
+                "                title\n" +
+                "            }\n" +
+                "        }\n" +
+                "        pageInfo {\n" +
+                "           hasPreviousPage\n" +
+                "           hasNextPage\n" +
+                "           startCursor\n" +
+                "           endCursor\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+        ArrayList<Album> albums = new ArrayList<>();
+        albums.add(Album.builder().id(firstData).title("brong").build());
+        albums.add(Album.builder().id(secData).title("brong").build());
+        albums.add(Album.builder().id(thirdData).title("brong").build());
+        albums.add(Album.builder().id(fourthData).title("brong").build());
+        List<Edge<Album>> defaultEdges = albums
+                .stream()
+                .map(album -> new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId())))
+                .limit(first)
+                .collect(Collectors.toList());
+        ConnectionCursor startCursor = CursorUtil.getConnectionCursor(defaultEdges, 0);
+        ConnectionCursor endCursor = CursorUtil.getConnectionCursor(defaultEdges, defaultEdges.size() - 1);
+        DefaultPageInfo defaultPageInfo = new DefaultPageInfo(
+                startCursor,
+                endCursor,
+                after != null,
+                defaultEdges.size() >= first
+        );
+        Mockito.when(albumService.getAllAlbums(Mockito.anyString(), Mockito.anyInt())).thenReturn(new DefaultConnection<>(defaultEdges, defaultPageInfo));
+
+        graphQlTester.document(request)
+                .variable("first", 2)
+                .variable("after", firstData)
+                .execute()
+                .path("allAlbums.edges[*].node")
+                .entityList(Album.class)
+                .hasSize(0)
+        ;
     }
 }

@@ -16,5 +16,5 @@ public interface AlbumRepository extends MongoRepository<Album, String>, Queryds
     @Query(value = "{'artist._id': '?0'}")
     List<Album> findAllByArtistId(String id);
 
-    List<Album>findAllByIdGreaterThan(ObjectId lastId, Pageable pageable);
+    List<Album> findAllByIdGreaterThan(ObjectId lastId, Pageable pageable);
 }
