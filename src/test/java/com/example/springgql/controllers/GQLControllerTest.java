@@ -80,7 +80,8 @@ class GQLControllerTest {
 
     @Test
     public void artistByid_shouldReturnSingleArtist_whenCalled() {
-        String request = "query {\n" +
+        Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(Artist.builder().id("ads").name("sd").build());
+                String request = "query {\n" +
                 "    artistById(id: 1) {\n" +
                 "        name\n" +
                 "    }\n" +
@@ -235,69 +236,5 @@ class GQLControllerTest {
                 .entityList(Album.class)
                 .path("albumsByArtistId[0].title")
                 .entity(String.class);
-    }
-
-    @Test
-    public void allAlbums_shouldReturnListAlbumExists_whenCalled() {
-        String request = "query {\n" +
-                "    allAlbums {\n" +
-                "       title\n" +
-                "    }\n" +
-                "}";
-        Mockito.when(albumService.getAllAlbums()).thenReturn(Arrays.asList(new Album(null, "tutel", null, null, null, null, null, null)));
-
-        graphQlTester.document(request)
-                .execute()
-                .path("allAlbums")
-                .entityList(Album.class)
-                .path("allAlbums[0].title")
-                .entity(String.class)
-        ;
-    }
-
-    @Test
-    public void albums_shouldReturnEmptyArray_whenArtistDoesntHaveAlbum() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
-        Mockito.when(albumService.getAlbumsByArtistId(Mockito.anyString())).thenThrow(DataNotFoundException.class);
-        String request = "query {\n" +
-                "    artists {\n" +
-                "        name\n" +
-                "        albums {\n" +
-                "           title\n" +
-                "        }\n" +
-                "    }\n" +
-                "}";
-
-        graphQlTester.document(request)
-                .execute()
-                .path("artists")
-                .entityList(Artist.class)
-                .path("artists.[0].albums")
-                .entityList(Album.class).hasSize(0)
-        ;
-    }
-
-    @Test
-    public void albums_shouldReturnNotEmptyArray_whenArtistDoesHaveAlbum() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
-        Mockito.when(albumService.getAlbumsByArtistId(Mockito.anyString())).thenReturn(Arrays.asList(Album.builder().title("judi").build()));
-        String request = "query {\n" +
-                "    artists {\n" +
-                "        name\n" +
-                "        albums {\n" +
-                "           title\n" +
-                "        }\n" +
-                "    }\n" +
-                "}";
-
-        graphQlTester.document(request)
-                .execute()
-                .path("artists")
-                .entityList(Artist.class)
-                .path("artists.[0].albums")
-                .entityList(Album.class).hasSize(1)
-                .path("artists.[0].albums.[0].title")
-                .equals("judi")
-        ;
     }
 }

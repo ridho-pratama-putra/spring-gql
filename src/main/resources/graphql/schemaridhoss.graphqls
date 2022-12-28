@@ -2,7 +2,7 @@ type Query {
     artistById(id: ID): Artist!
     artists: [Artist]
     albumsByArtistId(id: ID): [Album]
-    allAlbums: [Album]
+    allAlbums(first: Int, after: String): AlbumConnection
 }
 
 type Mutation {
@@ -35,4 +35,21 @@ type Album {
     releaseDate: String!
     duration: String!
     artist: Artist!
+}
+
+type AlbumConnection {
+    edges: [AlbumEdge]
+    pageInfo: PageInfo
+}
+
+type AlbumEdge {
+    cursor: String
+    node: Album
+}
+
+type PageInfo {
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+    startCursor: String
+    endCursor: String
 }
