@@ -1,7 +1,6 @@
 package com.example.springgql.controllers;
 
 import com.example.springgql.enums.CategoryEnum;
-import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Album;
 import com.example.springgql.models.Artist;
@@ -126,6 +125,7 @@ class GQLControllerTest {
 
     @Test
     public void artistById_shouldReturnSingleArtisWithAlbum_whenCalled() {
+        Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(Artist.builder().id("someValue").name("asdfg").build());
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
                 "     id\n" +
@@ -293,7 +293,7 @@ class GQLControllerTest {
                 .execute()
                 .path("allAlbums.edges[*].node")
                 .entityList(Album.class)
-                .hasSize(0)
+                .hasSize(2)
         ;
     }
 }
