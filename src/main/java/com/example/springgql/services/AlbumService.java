@@ -88,6 +88,6 @@ public class AlbumService {
 //        Query query = new Query();
 //        query.addCriteria(Criteria.where("_id").gt(objectId));
 //        return template.find(query, Album.class);
-        return repository.findAllByIdGreaterThan(afterID, Pageable.ofSize(limit));
+        return repository.findAllByIdGreaterThan(objectId, Pageable.ofSize(limit));
     }
 }
