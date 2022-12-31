@@ -125,7 +125,12 @@ class GQLControllerTest {
 
     @Test
     public void artistById_shouldReturnSingleArtisWithAlbum_whenCalled() {
-        Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(Artist.builder().id("someValue").name("asdfg").build());
+        Artist artist = Artist.builder().id("someValue").name("asdfg").build();
+        Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
+        Map<Artist, List<Album>> mockBatchMappingReult = new HashMap<>();
+        mockBatchMappingReult.put(artist, Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
+        Mockito.when(albumService.getAlbumsByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
+
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
                 "     id\n" +
@@ -148,7 +153,9 @@ class GQLControllerTest {
     @Test
     public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
         Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
-        Mockito.when(albumService.getAlbumsByArtistId(Mockito.any())).thenReturn(Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
+        Map<Artist, List<Album>> mockBatchMappingReult = new HashMap<>();
+        mockBatchMappingReult.put(Artist.builder().id("sad").name("saassa").build(), Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
+        Mockito.when(albumService.getAlbumsByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
@@ -162,7 +169,7 @@ class GQLControllerTest {
                 .execute()
                 .path("artists")
                 .entityList(Artist.class)
-                .path("artists.[0].albums")
+                .path("artists.[*].albums")
                 .entityList(Album.class)
         ;
     }
