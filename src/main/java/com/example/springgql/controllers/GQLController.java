@@ -8,9 +8,7 @@ import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.services.AlbumService;
 import com.example.springgql.services.ArtistService;
-import com.example.springgql.utils.CursorUtil;
-import graphql.relay.*;
-import graphql.schema.DataFetchingEnvironment;
+import graphql.relay.Connection;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -19,10 +17,8 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class GQLController {
@@ -69,15 +65,7 @@ public class GQLController {
 
     @BatchMapping
     Map<Artist, List<Album>> albums(List<Artist> artists) {
-        return artists.stream().collect(Collectors.toMap(artist -> artist, artist -> {
-            List<Album> albumsByArtistId = new ArrayList<>();
-            try {
-                albumsByArtistId = albumService.getAlbumsByArtistId(artist.getId());
-            } catch (DataNotFoundException exception) {
-
-            }
-            return albumsByArtistId;
-        }));
+        return albumService.getAlbumsByArtistIds(artists);
     }
 
     @QueryMapping

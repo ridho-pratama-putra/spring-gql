@@ -18,6 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,5 +91,13 @@ public class AlbumService {
 //        query.addCriteria(Criteria.where("_id").gt(objectId));
 //        return template.find(query, Album.class);
         return repository.findAllByIdGreaterThan(objectId, Pageable.ofSize(limit));
+    }
+
+    public Map<Artist, List<Album>> getAlbumsByArtistIds(List<Artist> artists) {
+        List<ObjectId> collect = artists.stream().map(artist -> new ObjectId(artist.getId())).collect(Collectors.toList());
+        List<Album> allByArtistIdIn = repository.findAllByArtistIdIn(collect);
+        return artists.stream()
+                .collect(Collectors.toMap(Function.identity(), artist -> allByArtistIdIn.stream().filter(album -> album.getArtist().getId().equals(artist.getId()))
+                        .collect(Collectors.toList())));
     }
 }
