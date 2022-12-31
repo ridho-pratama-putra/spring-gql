@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.OneToMany;
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @QueryEntity
@@ -21,4 +18,7 @@ public class Artist {
     @Id
     String id;
     String name;
+
+//    @DocumentReference(lazy=true)
+//    private List<Album> albumsList;
 }

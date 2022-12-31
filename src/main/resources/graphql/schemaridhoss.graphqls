@@ -24,6 +24,7 @@ type Artist {
     id: ID
     name: String!
     albums: [Album]
+#    albumsList: [Album]
 }
 
 type Album {

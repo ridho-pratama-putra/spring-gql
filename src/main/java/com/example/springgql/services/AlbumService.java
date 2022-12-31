@@ -47,7 +47,9 @@ public class AlbumService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return repository.save(entity);
+        Album save = repository.save(entity);
+//        artistService.updateAlbumOnArtist(save, artistByName);
+        return save;
     }
 
     public List<Album> getAlbumsByArtistId(String id) {
