@@ -1,5 +1,0 @@
-architecture: replicaset
-namespaceOverride: mongodb
-replicaCount: 1
-persistence:
- size: 16Mi
