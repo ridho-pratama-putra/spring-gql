@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: artist-library-config-map
+  name: spring-gql-config-map
   namespace: app
 data:
 #  mongodb_cluster: mongodb-service # defined in mongodb internal service metadata

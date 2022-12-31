@@ -31,22 +31,22 @@ spec:
             - name: MONGODB_URI
               valueFrom:
                 secretKeyRef:
-                  name: artist-library-secret
+                  name: spring-gql-secret
                   key: mongodb-uri
 #            - name: MONGODB_PREFIX_URL
 #              valueFrom:
 #                configMapKeyRef:
-#                  name: artist-library-config-map
+#                  name: spring-gql-config-map
 #                  key: mongodb_prefix_url
 #            - name: MONGODB_CLUSTER
 #              valueFrom:
 #                configMapKeyRef:
-#                  name: artist-library-config-map
+#                  name: spring-gql-config-map
 #                  key: mongodb_cluster
             - name: MONGODB_DATABASE
               valueFrom:
                 configMapKeyRef:
-                  name: artist-library-config-map
+                  name: spring-gql-config-map
                   key: mongodb_db_name
           resources:
 #            limits:
