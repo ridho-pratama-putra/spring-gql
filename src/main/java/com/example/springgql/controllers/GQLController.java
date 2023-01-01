@@ -69,8 +69,8 @@ public class GQLController {
     }
 
     @QueryMapping
-    Flux<Album> albumsByArtistId(@Argument(name = "id") String id) {
-        return Flux.fromIterable(albumService.getAlbumsByArtistId(id));
+    Connection<Album> albumsByArtistId(@Argument(name = "id") String id, @Argument(name = "first") int first, @Argument(name = "after") String after) {
+        return albumService.getAlbumsByArtistId(id, first, after);
     }
 
     @QueryMapping

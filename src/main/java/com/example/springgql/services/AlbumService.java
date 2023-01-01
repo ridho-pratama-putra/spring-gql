@@ -6,7 +6,6 @@ import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.repositories.AlbumRepository;
 import com.example.springgql.utils.CursorUtil;
-import com.google.common.collect.Iterables;
 import graphql.relay.*;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -52,18 +50,8 @@ public class AlbumService {
         return save;
     }
 
-    public List<Album> getAlbumsByArtistId(String id) {
-        Iterable<Album> all = repository.findAllByArtistId(id);
-        if (Iterables.isEmpty(all)) {
-            throw new DataNotFoundException("Data not found");
-        }
-        List<Album> result = new ArrayList<>();
-        all.forEach(result::add);
-        return result;
-    }
-
-    public DefaultConnection<Album> getAllAlbums(String after, int first) {
-        List<Album> all = getAlbumsByAfterCursor(after, first);
+    public DefaultConnection<Album> getAlbumsByArtistId(String id, int first, String after) {
+        List<Album> all = getAlbumsOnArtistByAfterCursor(id, after, first);
         List<Edge<Album>> defaultEdges = all
                 .stream()
                 .map(album -> new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId())))
@@ -83,6 +71,27 @@ public class AlbumService {
         return new DefaultConnection<>(defaultEdges, defaultPageInfo);
     }
 
+    public DefaultConnection<Album> getAllAlbums(String after, int limit) {
+        List<Album> all = getAlbumsByAfterCursor(after, limit);
+        List<Edge<Album>> defaultEdges = all
+                .stream()
+                .map(album -> new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId())))
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        ConnectionCursor startCursor = CursorUtil.getConnectionCursor(defaultEdges, 0);
+        ConnectionCursor endCursor = CursorUtil.getConnectionCursor(defaultEdges, defaultEdges.size() - 1);
+
+        DefaultPageInfo defaultPageInfo = new DefaultPageInfo(
+                startCursor,
+                endCursor,
+                after != null,
+                defaultEdges.size() >= limit
+        );
+
+        return new DefaultConnection<>(defaultEdges, defaultPageInfo);
+    }
+
     public List<Album> getAlbumsByAfterCursor(String afterCursor, int limit) {
         if (afterCursor == null || afterCursor.isEmpty()) {
             return repository.findAll(Pageable.ofSize(limit)).toList();
@@ -93,6 +102,19 @@ public class AlbumService {
 //        query.addCriteria(Criteria.where("_id").gt(objectId));
 //        return template.find(query, Album.class);
         return repository.findAllByIdGreaterThan(objectId, Pageable.ofSize(limit));
+    }
+
+    public List<Album> getAlbumsOnArtistByAfterCursor(String id, String afterCursor, int limit) {
+        if (afterCursor == null || afterCursor.isEmpty()) {
+            return repository.findAll(Pageable.ofSize(limit)).toList();
+        }
+        String afterID = CursorUtil.convertIdFromCursor(afterCursor);
+        ObjectId objectId = new ObjectId(afterID);
+        ObjectId artistId = new ObjectId(id);
+//        Query query = new Query();
+//        query.addCriteria(Criteria.where("_id").gt(objectId));
+//        return template.find(query, Album.class);
+        return repository.findAllByIdGreaterThanAndArtistId(objectId, artistId, Pageable.ofSize(limit));
     }
 
     public Map<Artist, List<Album>> getAlbumsByArtistIds(List<Artist> artists) {

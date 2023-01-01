@@ -18,5 +18,7 @@ public interface AlbumRepository extends MongoRepository<Album, String>, Queryds
 
     List<Album> findAllByIdGreaterThan(ObjectId lastId, Pageable pageable);
 
+    List<Album> findAllByIdGreaterThanAndArtistId(ObjectId lastId, ObjectId artistId, Pageable pageable);
+
     List<Album> findAllByArtistIdIn(List<ObjectId> artists);
 }
