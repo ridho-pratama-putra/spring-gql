@@ -30,8 +30,11 @@ type Artist {
 type Album {
     id: ID
     title: String!
+    createdByUser:String!
+    creationDate:String!
+    lastModifiedDate:String!
+    lastModifiedUserId: String!
     categoryEnum: String!
-    addedDate: String!
     category: String!
     releaseDate: String!
     duration: String!

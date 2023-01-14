@@ -6,6 +6,7 @@ import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.AlbumInput;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.AlbumRepository;
+import graphql.relay.DefaultConnection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 class AlbumServiceTest {
@@ -70,8 +70,8 @@ class AlbumServiceTest {
         albums.add(new Album());
         Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(albums);
 
-        List<Album> actualResult = service.getAlbumsByArtistId(artistId);
-        Assertions.assertNotNull(actualResult);
+        DefaultConnection<Album> albumsByArtistId = service.getAlbumsByArtistId(artistId, 1, "");
+        Assertions.assertNotNull(albumsByArtistId);
     }
 
     @Test
@@ -81,7 +81,7 @@ class AlbumServiceTest {
             ArrayList<Album> albums = new ArrayList<>();
             Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(albums);
 
-            service.getAlbumsByArtistId(artistId);
+            service.getAlbumsByArtistId(artistId, 1, " ");
         });
     }
 

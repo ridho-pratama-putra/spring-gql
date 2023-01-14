@@ -38,8 +38,7 @@ public class AlbumService {
         try {
             entity = Album.builder()
                     .title(albumInput.getTitle())
-                    .addedDate(date.getCalendar().getTime())
-                    .releaseDate(date.parse(albumInput.getReleaseDate()).toString())
+                    .releaseDate(date.parse(albumInput.getReleaseDate()))
                     .artist(artistByName)
                     .build();
         } catch (ParseException e) {
@@ -75,7 +74,9 @@ public class AlbumService {
         List<Album> all = getAlbumsByAfterCursor(after, limit);
         List<Edge<Album>> defaultEdges = all
                 .stream()
-                .map(album -> new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId())))
+                .map(album -> {
+                    return new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId()));
+                })
                 .limit(limit)
                 .collect(Collectors.toList());
 

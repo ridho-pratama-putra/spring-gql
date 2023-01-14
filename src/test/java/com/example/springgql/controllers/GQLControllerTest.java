@@ -128,7 +128,7 @@ class GQLControllerTest {
         Artist artist = Artist.builder().id("someValue").name("asdfg").build();
         Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
         Map<Artist, List<Album>> mockBatchMappingReult = new HashMap<>();
-        mockBatchMappingReult.put(artist, Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
+        mockBatchMappingReult.put(artist, Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null)));
         Mockito.when(albumService.getAlbumsByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
 
         String request = "query artistById($id: ID){\n" +
@@ -154,7 +154,7 @@ class GQLControllerTest {
     public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
         Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
         Map<Artist, List<Album>> mockBatchMappingReult = new HashMap<>();
-        mockBatchMappingReult.put(Artist.builder().id("sad").name("saassa").build(), Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null, null)));
+        mockBatchMappingReult.put(Artist.builder().id("sad").name("saassa").build(), Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null)));
         Mockito.when(albumService.getAlbumsByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
         String request = "query {\n" +
                 "    artists {\n" +
@@ -202,7 +202,6 @@ class GQLControllerTest {
     public void createAlbumOnArtist_shouldReturnCreatedAlbum_whenCalled() {
         Mockito.when(albumService.saveAlbumOnArtist(Mockito.any())).thenReturn(Album.builder()
                 .title("album1")
-                .addedDate(new Date())
                 .categoryEnum(CategoryEnum.ROCK)
                 .releaseDate("11/12/1997")
                 .build());
@@ -232,7 +231,7 @@ class GQLControllerTest {
 
     @Test
     public void albumsByArtistId_shouldReturnSingleArtisWithAlbum_whenCalled() {
-        Mockito.when(albumService.getAlbumsByArtistId(Mockito.any())).thenReturn(Arrays.asList(new Album(null, "tutel", null, null, null, null, null, null)));
+        Mockito.when(albumService.getAlbumsByArtistId(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Mockito.any());
         String request = "query albumsByArtistId($id: ID){\n" +
                 "    albumsByArtistId(id: $id) {\n" +
                 "        title\n" +

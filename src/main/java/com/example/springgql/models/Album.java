@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
@@ -24,8 +24,20 @@ public class Album {
     String id;
     String title;
     CategoryEnum categoryEnum;
-    Date addedDate;
-    String releaseDate;
+
+    @CreatedBy
+    private String createdByUser;
+
+    @CreatedDate
+    private Date creationDate = new Date();
+
+    @LastModifiedDate
+    private Date lastModifiedDate;
+
+    @LastModifiedBy
+    private String lastModifiedUserId;
+
+    Date releaseDate;
     List<Song> songList;
     String duration;
     @DocumentReference(lazy = true)
