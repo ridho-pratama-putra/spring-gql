@@ -75,8 +75,6 @@ public class AlbumService {
         List<Edge<Album>> defaultEdges = all
                 .stream()
                 .map(album -> {
-//                    ZonedDateTime parse = ZonedDateTime.parse(album.getCreationDate().toString(), DateTimeFormatter.ofPattern("E MMM dd HH:mm:ss zz y"));
-//                    album.setCreationDate(parse);
                     return new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId()));
                 })
                 .limit(limit)
