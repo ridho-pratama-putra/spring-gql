@@ -10,6 +10,8 @@ import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +31,7 @@ public class Album {
     private String createdByUser;
 
     @CreatedDate
-    private Date creationDate = new Date();
+    private LocalDateTime creationDate = LocalDateTime.now(ZoneId.of("Asia/Jakarta"));
 
     @LastModifiedDate
     private Date lastModifiedDate;

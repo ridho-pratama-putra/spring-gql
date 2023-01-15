@@ -1,3 +1,4 @@
+scalar Date
 type Query {
     artistById(id: ID): Artist!
     artists: [Artist]
@@ -31,7 +32,7 @@ type Album {
     id: ID
     title: String!
     createdByUser:String!
-    creationDate:String!
+    creationDate:Date!
     lastModifiedDate:String!
     lastModifiedUserId: String!
     categoryEnum: String!
