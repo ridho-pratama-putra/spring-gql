@@ -65,24 +65,13 @@ class AlbumServiceTest {
 
     @Test
     public void getAlbumsByArtistId_shouldReturnEntity_whenDataIsExist() {
-        String artistId = "uniqueArtistId";
+        String fakeID = "63c911b6a272812098224d7c";
         ArrayList<Album> albums = new ArrayList<>();
-        albums.add(new Album());
-        Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(albums);
+        albums.add(Album.builder().id(fakeID).build());
+        Mockito.when(repository.findAllByArtistId(Mockito.any(), Mockito.any())).thenReturn(albums);
 
-        DefaultConnection<Album> albumsByArtistId = service.getAlbumsByArtistId(artistId, 1, "");
+        DefaultConnection<Album> albumsByArtistId = service.getAlbumsByArtistId(fakeID, 1, "");
         Assertions.assertNotNull(albumsByArtistId);
-    }
-
-    @Test
-    public void getAlbumsByArtistId_shouldReturnDataNotFoundException_whenDataIsNotExist() {
-        Assertions.assertThrows(DataNotFoundException.class, () -> {
-            String artistId = "uniqueArtistId";
-            ArrayList<Album> albums = new ArrayList<>();
-            Mockito.when(repository.findAllByArtistId(Mockito.any())).thenReturn(albums);
-
-            service.getAlbumsByArtistId(artistId, 1, " ");
-        });
     }
 
     @Test

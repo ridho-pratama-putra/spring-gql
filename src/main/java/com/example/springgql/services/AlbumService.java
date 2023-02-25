@@ -106,12 +106,14 @@ public class AlbumService {
     }
 
     public List<Album> getAlbumsOnArtistByAfterCursor(String id, String afterCursor, int limit) {
+        ObjectId artistId = new ObjectId(id);
+        
         if (afterCursor == null || afterCursor.isEmpty()) {
-            return repository.findAll(Pageable.ofSize(limit)).toList();
+            return repository.findAllByArtistId(artistId, Pageable.ofSize(limit));
         }
+        
         String afterID = CursorUtil.convertIdFromCursor(afterCursor);
         ObjectId objectId = new ObjectId(afterID);
-        ObjectId artistId = new ObjectId(id);
 //        Query query = new Query();
 //        query.addCriteria(Criteria.where("_id").gt(objectId));
 //        return template.find(query, Album.class);
