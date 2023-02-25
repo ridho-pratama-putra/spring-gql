@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -36,17 +37,13 @@ public class ReleaseService {
             throw new DataNotFoundException("Data not found");
         }
         Release entity;
-        try {
-            entity = Release.builder()
-                    .title(releaseInput.getTitle())
-                    .releaseDate(date.parse(releaseInput.getReleaseDate()))
-                    .category(releaseInput.getCategory())
-                    .releaseType(releaseInput.getReleaseType())
-                    .artist(artistByName)
-                    .build();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        entity = Release.builder()
+                .title(releaseInput.getTitle())
+                .releaseDate(LocalDateTime.parse(releaseInput.getReleaseDate()))
+                .category(releaseInput.getCategory())
+                .releaseType(releaseInput.getReleaseType())
+                .artist(artistByName)
+                .build();
         Release save = repository.save(entity);
 //        artistService.updateAlbumOnArtist(save, artistByName);
         return save;

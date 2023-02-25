@@ -18,11 +18,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.TraceContext;
 import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,9 @@ class GQLControllerTest {
 
     @MockBean
     RestTemplate restTemplate;
+
+    @MockBean
+    private MappingMongoConverter mappingMongoConverter;
 
     @BeforeEach
     public void init() {
@@ -127,15 +132,15 @@ class GQLControllerTest {
     public void artistById_shouldReturnSingleArtisWithAlbum_whenCalled() {
         Artist artist = Artist.builder().id("someValue").name("asdfg").build();
         Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
-        Map<Artist, List<Release>> mockBatchMappingReult = new HashMap<>();
-//        mockBatchMappingReult.put(artist, Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null)));
-        Mockito.when(releaseService.getReleasesByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
+        Map<Artist, List<Release>> mockBatchMappingResult = new HashMap<>();
+        mockBatchMappingResult.put(artist, Arrays.asList(Release.builder().title("sad").build()));
+        Mockito.when(releaseService.getReleasesByArtistIds(Mockito.any())).thenReturn(mockBatchMappingResult);
 
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
                 "     id\n" +
                 "     name\n" +
-                "        albums {\n" +
+                "        releases {\n" +
                 "           title\n" +
                 "        }\n" +
                 "    }\n" +
@@ -146,7 +151,7 @@ class GQLControllerTest {
                 .execute()
                 .path("artistById")
                 .entity(Artist.class)
-                .path("artistById.albums")
+                .path("artistById.releases")
                 .entityList(Release.class);
     }
 
@@ -159,7 +164,7 @@ class GQLControllerTest {
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
-                "        albums {\n" +
+                "        releases {\n" +
                 "           title\n" +
                 "        }\n" +
                 "    }\n" +
@@ -199,22 +204,26 @@ class GQLControllerTest {
     }
 
     @Test
-    public void createAlbumOnArtist_shouldReturnCreatedAlbum_whenCalled() {
+    public void createReleaseOnArtist_shouldReturnCreatedAlbum_whenCalled() {
         Mockito.when(releaseService.saveReleaseOnArtist(Mockito.any())).thenReturn(Release.builder()
                 .title("album1")
                 .category(CategoryEnum.ROCK)
-                .releaseDate(new Date())
+                .releaseDate(LocalDateTime.now())
+                .creationDate(LocalDateTime.now())
                 .build());
         Map<String, Object> variable = new HashMap<>();
         HashMap<String, String> artistInput = new HashMap<>();
         artistInput.put("name", "endank");
         variable.put("title", "album1");
         variable.put("releaseDate", "11/12/1997");
+        variable.put("releaseType", "SINGLE");
+        variable.put("category", "ROCK");
         variable.put("artist", artistInput);
 
-        String request = "mutation($input: AlbumInput!) {" +
-                "  createAlbumOnArtist(albumInput: $input) {" +
+        String request = "mutation($input: ReleaseInput!) {" +
+                "  createReleaseOnArtist(releaseInput: $input) {" +
                 "    title" +
+                "    creationDate" +
                 "    releaseDate" +
                 "  }" +
                 "}";
@@ -222,33 +231,71 @@ class GQLControllerTest {
         graphQlTester.document(request)
                 .variable("input", variable)
                 .execute()
-                .path("createAlbumOnArtist")
+                .path("createReleaseOnArtist")
                 .entity(Release.class)
-                .path("createAlbumOnArtist.title")
+                .path("createReleaseOnArtist.title")
                 .entity(String.class)
         ;
     }
 
     @Test
-    public void albumsByArtistId_shouldReturnSingleArtisWithAlbum_whenCalled() {
-        Mockito.when(releaseService.getReleasesByArtistId(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Mockito.any());
-        String request = "query albumsByArtistId($id: ID){\n" +
-                "    albumsByArtistId(id: $id) {\n" +
-                "        title\n" +
+    public void releasesByArtistId_shouldReturnSingleArtisWithAlbum_whenCalled() {
+        ArrayList<Release> releases = new ArrayList<>();
+        String firstData = "6396c71e80040f6cf5d85586";
+        String secData = "639aa033b70a8f582f5b8b3b";
+        String thirdData = "639ad946aedd867645eb75d9";
+        String fourthData = "639ad9e1aedd867645eb75de";
+        int first = 2;
+        String after = secData;
+        releases.add(Release.builder().id(firstData).title("brong").build());
+        releases.add(Release.builder().id(secData).title("brong").build());
+        releases.add(Release.builder().id(thirdData).title("brong").build());
+        releases.add(Release.builder().id(fourthData).title("brong").build());
+        List<Edge<Release>> defaultEdges = releases
+                .stream()
+                .map(release -> new DefaultEdge<Release>(release, CursorUtil.convertCursorFromId(release.getId())))
+                .limit(first)
+                .collect(Collectors.toList());
+
+        ConnectionCursor startCursor = CursorUtil.getConnectionCursor(defaultEdges, 0);
+        ConnectionCursor endCursor = CursorUtil.getConnectionCursor(defaultEdges, defaultEdges.size() - 1);
+        DefaultPageInfo defaultPageInfo = new DefaultPageInfo(
+                startCursor,
+                endCursor,
+                after != null,
+                defaultEdges.size() >= first
+        );
+
+        Mockito.when(releaseService.getReleasesByArtistId(Mockito.any(String.class), Mockito.any(int.class), Mockito.any(String.class))).thenReturn(new DefaultConnection<>(defaultEdges, defaultPageInfo));
+        String request = "query releasesByArtistId($id: ID, $first: Int, $after: String){\n" +
+                "    releasesByArtistId(id: $id, first: $first, after: $after) {\n" +
+                "        edges {\n" +
+                "            cursor\n" +
+                "            node {\n" +
+                "                title\n" +
+                "            }\n" +
+                "        }\n" +
+                "        pageInfo {\n" +
+                "           hasPreviousPage\n" +
+                "           hasNextPage\n" +
+                "           startCursor\n" +
+                "           endCursor\n" +
+                "        }\n" +
                 "    }\n" +
                 "}";
 
         graphQlTester.document(request)
                 .variable("id", "someValue")
+                .variable("first", first)
+                .variable("after", after)
                 .execute()
-                .path("albumsByArtistId")
+                .path("releasesByArtistId.edges[*].node")
                 .entityList(Release.class)
-                .path("albumsByArtistId[0].title")
-                .entity(String.class);
+                .hasSize(2);
     }
 
     @Test
-    public void allAlbums_shouldReturnEmptyConnections_whenCalled() {
+    public void allReleases_shouldReturnEmptyConnections_whenCalled() {
         int first = 2;
         String firstData = "6396c71e80040f6cf5d85586";
         String secData = "639aa033b70a8f582f5b8b3b";
@@ -256,8 +303,8 @@ class GQLControllerTest {
         String fourthData = "639ad9e1aedd867645eb75de";
         String after = secData;
 
-        String request = "query allAlbums($first: Int, $after: String){\n" +
-                "    allAlbums(first: $first, after: $after) {\n" +
+        String request = "query allReleases($first: Int, $after: String){\n" +
+                "    allReleases(first: $first, after: $after) {\n" +
                 "        edges {\n" +
                 "            cursor\n" +
                 "            node {\n" +
@@ -280,7 +327,7 @@ class GQLControllerTest {
         releases.add(Release.builder().id(fourthData).title("brong").build());
         List<Edge<Release>> defaultEdges = releases
                 .stream()
-                .map(album -> new DefaultEdge<Release>(album, CursorUtil.convertCursorFromId(album.getId())))
+                .map(release -> new DefaultEdge<Release>(release, CursorUtil.convertCursorFromId(release.getId())))
                 .limit(first)
                 .collect(Collectors.toList());
         ConnectionCursor startCursor = CursorUtil.getConnectionCursor(defaultEdges, 0);
@@ -297,7 +344,7 @@ class GQLControllerTest {
                 .variable("first", 2)
                 .variable("after", firstData)
                 .execute()
-                .path("allAlbums.edges[*].node")
+                .path("allReleases.edges[*].node")
                 .entityList(Release.class)
                 .hasSize(2)
         ;

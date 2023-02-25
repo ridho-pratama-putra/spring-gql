@@ -1,4 +1,4 @@
-scalar LocalDateTime
+#scalar LocalDateTime
 type Query {
     artistById(id: ID): Artist!
     artists: [Artist]
@@ -33,7 +33,8 @@ type Release {
     id: ID
     title: String!
     createdByUser:String!
-    creationDate:LocalDateTime!
+#    creationDate:LocalDateTime!
+    creationDate:String!
     lastModifiedDate:String!
     lastModifiedUserId: String!
     category: String

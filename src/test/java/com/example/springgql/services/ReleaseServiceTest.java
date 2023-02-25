@@ -44,7 +44,7 @@ class ReleaseServiceTest {
         ReleaseInput juara = ReleaseInput.builder()
                 .title("juara")
                 .artist(ArtistInput.builder().name("endank").build())
-                .releaseDate("13/12/2012")
+                .releaseDate("2012-12-13T00:00:00")
                 .build();
 
         Release actualResult = service.saveReleaseOnArtist(juara);
