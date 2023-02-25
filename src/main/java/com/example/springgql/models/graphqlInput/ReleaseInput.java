@@ -1,5 +1,7 @@
 package com.example.springgql.models.graphqlInput;
 
+import com.example.springgql.enums.CategoryEnum;
+import com.example.springgql.enums.ReleaseType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +13,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 @Builder
 @Data
-public class AlbumInput {
+public class ReleaseInput {
     String title;
     String releaseDate;
     String totalSong;
     String duration;
+
+    CategoryEnum category;
+    ReleaseType releaseType;
     ArtistInput artist;
 }

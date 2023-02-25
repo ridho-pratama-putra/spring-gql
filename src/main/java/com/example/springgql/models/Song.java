@@ -18,5 +18,5 @@ public class Song {
     String duration;
     String totalPlayed;
     @DBRef
-    Album album;
+    Release release;
 }

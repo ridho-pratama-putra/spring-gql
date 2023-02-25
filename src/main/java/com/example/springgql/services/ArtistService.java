@@ -2,7 +2,7 @@ package com.example.springgql.services;
 
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
-import com.example.springgql.models.Album;
+import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.ArtistRepository;
@@ -24,15 +24,15 @@ public class ArtistService {
     final RestTemplate restTemplate;
 
     public Artist saveArtistInput(ArtistInput artistInput) {
-        HttpEntity<Album> request = null;
+        HttpEntity<Release> request = null;
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("X-Request-ID", MDC.get("X-Request-ID"));
-        request = new HttpEntity<>(Album.builder()
+        request = new HttpEntity<>(Release.builder()
         .artist(Artist.builder()
         .name(artistInput.getName())
         .build())
         .build(), httpHeaders);
-       ResponseEntity<Album> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Album.class);
+       ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
        if(newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
             Artist entity = Artist.builder()
                     .name(artistInput.getName())

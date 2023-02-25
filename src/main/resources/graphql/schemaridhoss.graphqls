@@ -2,54 +2,55 @@ scalar LocalDateTime
 type Query {
     artistById(id: ID): Artist!
     artists: [Artist]
-    albumsByArtistId(id: ID, first: Int, after: String): AlbumConnection
-    allAlbums(first: Int, after: String): AlbumConnection
+    releasesByArtistId(id: ID, first: Int, after: String): ReleaseConnection
+    allReleases(first: Int, after: String): ReleaseConnection
 }
 
 type Mutation {
     createArtist(artistInput: ArtistInput): Artist
-    createAlbumOnArtist(albumInput: AlbumInput): Album
+    createReleaseOnArtist(releaseInput: ReleaseInput): Release
 }
 
 input ArtistInput {
     name: String!
 }
 
-input AlbumInput {
+input ReleaseInput {
     title: String!
     releaseDate: String!
     artist: ArtistInput!
+    releaseType: String!
+    category: String!
 }
 
 type Artist {
     id: ID
     name: String!
-    albums: [Album]
-#    albumsList: [Album]
+    releases: [Release]
 }
 
-type Album {
+type Release {
     id: ID
     title: String!
     createdByUser:String!
     creationDate:LocalDateTime!
     lastModifiedDate:String!
     lastModifiedUserId: String!
-    categoryEnum: String!
-    category: String!
+    category: String
+    releaseType: String!
     releaseDate: String!
     duration: String!
     artist: Artist!
 }
 
-type AlbumConnection {
-    edges: [AlbumEdge]
+type ReleaseConnection {
+    edges: [ReleaseEdge]
     pageInfo: PageInfo
 }
 
-type AlbumEdge {
+type ReleaseEdge {
     cursor: String
-    node: Album
+    node: Release
 }
 
 type PageInfo {

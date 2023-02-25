@@ -2,11 +2,11 @@ package com.example.springgql.controllers;
 
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.logging.LoggingService;
-import com.example.springgql.models.Album;
+import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
-import com.example.springgql.models.graphqlInput.AlbumInput;
+import com.example.springgql.models.graphqlInput.ReleaseInput;
 import com.example.springgql.models.graphqlInput.ArtistInput;
-import com.example.springgql.services.AlbumService;
+import com.example.springgql.services.ReleaseService;
 import com.example.springgql.services.ArtistService;
 import graphql.relay.Connection;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -23,12 +23,12 @@ import java.util.Map;
 @Controller
 public class GQLController {
     public final ArtistService artistService;
-    public final AlbumService albumService;
+    public final ReleaseService releaseService;
     public final LoggingService log;
 
-    GQLController(ArtistService artistService, AlbumService albumService, LoggingService log) {
+    GQLController(ArtistService artistService, ReleaseService releaseService, LoggingService log) {
         this.artistService = artistService;
-        this.albumService = albumService;
+        this.releaseService = releaseService;
         this.log = log;
     }
 
@@ -53,8 +53,8 @@ public class GQLController {
     }
 
     @MutationMapping
-    public Mono<Album> createAlbumOnArtist(@Argument AlbumInput albumInput) {
-        return Mono.just(albumService.saveAlbumOnArtist(albumInput));
+    public Mono<Release> createReleaseOnArtist(@Argument ReleaseInput releaseInput) {
+        return Mono.just(releaseService.saveReleaseOnArtist(releaseInput));
     }
 
 //    @SchemaMapping(typeName = "Artist")
@@ -64,17 +64,17 @@ public class GQLController {
 //    }
 
     @BatchMapping
-    Map<Artist, List<Album>> albums(List<Artist> artists) {
-        return albumService.getAlbumsByArtistIds(artists);
+    Map<Artist, List<Release>> releases(List<Artist> artists) {
+        return releaseService.getReleasesByArtistIds(artists);
     }
 
     @QueryMapping
-    Connection<Album> albumsByArtistId(@Argument(name = "id") String id, @Argument(name = "first") int first, @Argument(name = "after") String after) {
-        return albumService.getAlbumsByArtistId(id, first, after);
+    Connection<Release> releasesByArtistId(@Argument(name = "id") String id, @Argument(name = "first") int first, @Argument(name = "after") String after) {
+        return releaseService.getReleasesByArtistId(id, first, after);
     }
 
     @QueryMapping
-    Connection<Album> allAlbums(@Argument(name = "first") int first, @Argument(name = "after") String after) {
-        return albumService.getAllAlbums(after, first);
+    Connection<Release> allReleases(@Argument(name = "first") int first, @Argument(name = "after") String after) {
+        return releaseService.getAllReleases(after, first);
     }
 }

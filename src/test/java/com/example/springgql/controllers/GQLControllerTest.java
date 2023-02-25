@@ -2,9 +2,9 @@ package com.example.springgql.controllers;
 
 import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.logging.LoggingService;
-import com.example.springgql.models.Album;
+import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
-import com.example.springgql.services.AlbumService;
+import com.example.springgql.services.ReleaseService;
 import com.example.springgql.services.ArtistService;
 import com.example.springgql.utils.CursorUtil;
 import graphql.relay.*;
@@ -37,7 +37,7 @@ class GQLControllerTest {
     ArtistService artistService;
 
     @MockBean
-    AlbumService albumService;
+    ReleaseService releaseService;
 
     @MockBean
     LoggingService loggingService;
@@ -127,9 +127,9 @@ class GQLControllerTest {
     public void artistById_shouldReturnSingleArtisWithAlbum_whenCalled() {
         Artist artist = Artist.builder().id("someValue").name("asdfg").build();
         Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
-        Map<Artist, List<Album>> mockBatchMappingReult = new HashMap<>();
+        Map<Artist, List<Release>> mockBatchMappingReult = new HashMap<>();
 //        mockBatchMappingReult.put(artist, Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null)));
-        Mockito.when(albumService.getAlbumsByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
+        Mockito.when(releaseService.getReleasesByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
 
         String request = "query artistById($id: ID){\n" +
                 "    artistById(id: $id) {\n" +
@@ -147,15 +147,15 @@ class GQLControllerTest {
                 .path("artistById")
                 .entity(Artist.class)
                 .path("artistById.albums")
-                .entityList(Album.class);
+                .entityList(Release.class);
     }
 
     @Test
     public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
         Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
-        Map<Artist, List<Album>> mockBatchMappingReult = new HashMap<>();
+        Map<Artist, List<Release>> mockBatchMappingReult = new HashMap<>();
 //        mockBatchMappingReult.put(Artist.builder().id("sad").name("saassa").build(), Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null)));
-        Mockito.when(albumService.getAlbumsByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
+        Mockito.when(releaseService.getReleasesByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);
         String request = "query {\n" +
                 "    artists {\n" +
                 "        name\n" +
@@ -170,7 +170,7 @@ class GQLControllerTest {
                 .path("artists")
                 .entityList(Artist.class)
                 .path("artists.[*].albums")
-                .entityList(Album.class)
+                .entityList(Release.class)
         ;
     }
 
@@ -200,9 +200,9 @@ class GQLControllerTest {
 
     @Test
     public void createAlbumOnArtist_shouldReturnCreatedAlbum_whenCalled() {
-        Mockito.when(albumService.saveAlbumOnArtist(Mockito.any())).thenReturn(Album.builder()
+        Mockito.when(releaseService.saveReleaseOnArtist(Mockito.any())).thenReturn(Release.builder()
                 .title("album1")
-                .categoryEnum(CategoryEnum.ROCK)
+                .category(CategoryEnum.ROCK)
                 .releaseDate(new Date())
                 .build());
         Map<String, Object> variable = new HashMap<>();
@@ -223,7 +223,7 @@ class GQLControllerTest {
                 .variable("input", variable)
                 .execute()
                 .path("createAlbumOnArtist")
-                .entity(Album.class)
+                .entity(Release.class)
                 .path("createAlbumOnArtist.title")
                 .entity(String.class)
         ;
@@ -231,7 +231,7 @@ class GQLControllerTest {
 
     @Test
     public void albumsByArtistId_shouldReturnSingleArtisWithAlbum_whenCalled() {
-        Mockito.when(albumService.getAlbumsByArtistId(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Mockito.any());
+        Mockito.when(releaseService.getReleasesByArtistId(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Mockito.any());
         String request = "query albumsByArtistId($id: ID){\n" +
                 "    albumsByArtistId(id: $id) {\n" +
                 "        title\n" +
@@ -242,7 +242,7 @@ class GQLControllerTest {
                 .variable("id", "someValue")
                 .execute()
                 .path("albumsByArtistId")
-                .entityList(Album.class)
+                .entityList(Release.class)
                 .path("albumsByArtistId[0].title")
                 .entity(String.class);
     }
@@ -273,14 +273,14 @@ class GQLControllerTest {
                 "        }\n" +
                 "    }\n" +
                 "}";
-        ArrayList<Album> albums = new ArrayList<>();
-        albums.add(Album.builder().id(firstData).title("brong").build());
-        albums.add(Album.builder().id(secData).title("brong").build());
-        albums.add(Album.builder().id(thirdData).title("brong").build());
-        albums.add(Album.builder().id(fourthData).title("brong").build());
-        List<Edge<Album>> defaultEdges = albums
+        ArrayList<Release> releases = new ArrayList<>();
+        releases.add(Release.builder().id(firstData).title("brong").build());
+        releases.add(Release.builder().id(secData).title("brong").build());
+        releases.add(Release.builder().id(thirdData).title("brong").build());
+        releases.add(Release.builder().id(fourthData).title("brong").build());
+        List<Edge<Release>> defaultEdges = releases
                 .stream()
-                .map(album -> new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId())))
+                .map(album -> new DefaultEdge<Release>(album, CursorUtil.convertCursorFromId(album.getId())))
                 .limit(first)
                 .collect(Collectors.toList());
         ConnectionCursor startCursor = CursorUtil.getConnectionCursor(defaultEdges, 0);
@@ -291,14 +291,14 @@ class GQLControllerTest {
                 after != null,
                 defaultEdges.size() >= first
         );
-        Mockito.when(albumService.getAllAlbums(Mockito.anyString(), Mockito.anyInt())).thenReturn(new DefaultConnection<>(defaultEdges, defaultPageInfo));
+        Mockito.when(releaseService.getAllReleases(Mockito.anyString(), Mockito.anyInt())).thenReturn(new DefaultConnection<>(defaultEdges, defaultPageInfo));
 
         graphQlTester.document(request)
                 .variable("first", 2)
                 .variable("after", firstData)
                 .execute()
                 .path("allAlbums.edges[*].node")
-                .entityList(Album.class)
+                .entityList(Release.class)
                 .hasSize(2)
         ;
     }

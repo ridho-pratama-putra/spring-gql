@@ -1,6 +1,7 @@
 package com.example.springgql.models;
 
 import com.example.springgql.enums.CategoryEnum;
+import com.example.springgql.enums.ReleaseType;
 import com.querydsl.core.annotations.QueryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,11 +21,13 @@ import java.util.List;
 @Document
 @Builder
 @Data
-public class Album {
+public class Release {
     @Id
     String id;
     String title;
-    CategoryEnum categoryEnum;
+    CategoryEnum category;
+
+    ReleaseType releaseType;
 
     @CreatedBy
     private String createdByUser;

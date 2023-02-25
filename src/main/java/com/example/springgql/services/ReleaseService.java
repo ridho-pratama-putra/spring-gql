@@ -1,10 +1,11 @@
 package com.example.springgql.services;
 
+import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.exception.DataNotFoundException;
-import com.example.springgql.models.Album;
+import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
-import com.example.springgql.models.graphqlInput.AlbumInput;
-import com.example.springgql.repositories.AlbumRepository;
+import com.example.springgql.models.graphqlInput.ReleaseInput;
+import com.example.springgql.repositories.ReleaseRepository;
 import com.example.springgql.utils.CursorUtil;
 import graphql.relay.*;
 import lombok.RequiredArgsConstructor;
@@ -22,38 +23,40 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AlbumService {
+public class ReleaseService {
 
-    final AlbumRepository repository;
+    final ReleaseRepository repository;
     final ArtistService artistService;
     final MongoTemplate template;
 
-    public Album saveAlbumOnArtist(AlbumInput albumInput) {
+    public Release saveReleaseOnArtist(ReleaseInput releaseInput) {
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-        Artist artistByName = artistService.getArtistByName(albumInput.getArtist().getName());
+        Artist artistByName = artistService.getArtistByName(releaseInput.getArtist().getName());
         if (artistByName == null) {
             throw new DataNotFoundException("Data not found");
         }
-        Album entity;
+        Release entity;
         try {
-            entity = Album.builder()
-                    .title(albumInput.getTitle())
-                    .releaseDate(date.parse(albumInput.getReleaseDate()))
+            entity = Release.builder()
+                    .title(releaseInput.getTitle())
+                    .releaseDate(date.parse(releaseInput.getReleaseDate()))
+                    .category(releaseInput.getCategory())
+                    .releaseType(releaseInput.getReleaseType())
                     .artist(artistByName)
                     .build();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        Album save = repository.save(entity);
+        Release save = repository.save(entity);
 //        artistService.updateAlbumOnArtist(save, artistByName);
         return save;
     }
 
-    public DefaultConnection<Album> getAlbumsByArtistId(String id, int first, String after) {
-        List<Album> all = getAlbumsOnArtistByAfterCursor(id, after, first);
-        List<Edge<Album>> defaultEdges = all
+    public DefaultConnection<Release> getReleasesByArtistId(String id, int first, String after) {
+        List<Release> all = getReleasesOnArtistByAfterCursor(id, after, first);
+        List<Edge<Release>> defaultEdges = all
                 .stream()
-                .map(album -> new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId())))
+                .map(album -> new DefaultEdge<Release>(album, CursorUtil.convertCursorFromId(album.getId())))
                 .limit(first)
                 .collect(Collectors.toList());
 
@@ -70,12 +73,12 @@ public class AlbumService {
         return new DefaultConnection<>(defaultEdges, defaultPageInfo);
     }
 
-    public DefaultConnection<Album> getAllAlbums(String after, int limit) {
-        List<Album> all = getAlbumsByAfterCursor(after, limit);
-        List<Edge<Album>> defaultEdges = all
+    public DefaultConnection<Release> getAllReleases(String after, int limit) {
+        List<Release> all = getReleasesByAfterCursor(after, limit);
+        List<Edge<Release>> defaultEdges = all
                 .stream()
                 .map(album -> {
-                    return new DefaultEdge<Album>(album, CursorUtil.convertCursorFromId(album.getId()));
+                    return new DefaultEdge<Release>(album, CursorUtil.convertCursorFromId(album.getId()));
                 })
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -93,7 +96,7 @@ public class AlbumService {
         return new DefaultConnection<>(defaultEdges, defaultPageInfo);
     }
 
-    public List<Album> getAlbumsByAfterCursor(String afterCursor, int limit) {
+    public List<Release> getReleasesByAfterCursor(String afterCursor, int limit) {
         if (afterCursor == null || afterCursor.isEmpty()) {
             return repository.findAll(Pageable.ofSize(limit)).toList();
         }
@@ -105,7 +108,7 @@ public class AlbumService {
         return repository.findAllByIdGreaterThan(objectId, Pageable.ofSize(limit));
     }
 
-    public List<Album> getAlbumsOnArtistByAfterCursor(String id, String afterCursor, int limit) {
+    public List<Release> getReleasesOnArtistByAfterCursor(String id, String afterCursor, int limit) {
         ObjectId artistId = new ObjectId(id);
         
         if (afterCursor == null || afterCursor.isEmpty()) {
@@ -120,11 +123,11 @@ public class AlbumService {
         return repository.findAllByIdGreaterThanAndArtistId(objectId, artistId, Pageable.ofSize(limit));
     }
 
-    public Map<Artist, List<Album>> getAlbumsByArtistIds(List<Artist> artists) {
+    public Map<Artist, List<Release>> getReleasesByArtistIds(List<Artist> artists) {
         List<ObjectId> collect = artists.stream().map(artist -> new ObjectId(artist.getId())).collect(Collectors.toList());
-        List<Album> allByArtistIdIn = repository.findAllByArtistIdIn(collect);
+        List<Release> allByArtistIdIn = repository.findAllByArtistIdIn(collect);
         return artists.stream()
-                .collect(Collectors.toMap(Function.identity(), artist -> allByArtistIdIn.stream().filter(album -> album.getArtist().getId().equals(artist.getId()))
+                .collect(Collectors.toMap(Function.identity(), artist -> allByArtistIdIn.stream().filter(release -> release.getArtist().getId().equals(artist.getId()))
                         .collect(Collectors.toList())));
     }
 }
