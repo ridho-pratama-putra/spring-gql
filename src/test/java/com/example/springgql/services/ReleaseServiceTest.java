@@ -1,5 +1,6 @@
 package com.example.springgql.services;
 
+import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
@@ -16,6 +17,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 
@@ -31,8 +35,12 @@ class ReleaseServiceTest {
     @Autowired
     ReleaseService service;
 
+
+    @MockBean
+    private RestTemplate restTemplate;
+
     @Test
-    public void saveAlbumOnArtist_shouldReturnEntity_whenSuccessSaveArtistNameExist() {
+    public void saveReleaseOnArtist_shouldReturnEntity_whenSuccessSaveArtistNameExistAndCallRecommendationServiceReturnOK() {
         Artist artist = Artist.builder()
                 .name("endank")
                 .build();
@@ -46,6 +54,7 @@ class ReleaseServiceTest {
                 .artist(ArtistInput.builder().name("endank").build())
                 .releaseDate("2012-12-13T00:00:00")
                 .build();
+        Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         Release actualResult = service.saveReleaseOnArtist(juara);
 
@@ -53,13 +62,33 @@ class ReleaseServiceTest {
     }
 
     @Test
-    public void saveAlbumOnArtist_shouldReturnExceptionDataNotFoundException_whenArtistNotFound() {
+    public void saveReleaseOnArtist_shouldReturnExceptionDataNotFoundException_whenArtistNotFound() {
         Assertions.assertThrows(DataNotFoundException.class, () -> {
             ReleaseInput juara = ReleaseInput.builder()
                     .artist(ArtistInput.builder().name("endank").build())
                     .build();
             Mockito.when(artistService.getArtistByName(Mockito.any())).thenReturn(null);
+
             service.saveReleaseOnArtist(juara);
+        });
+    }
+
+    @Test
+    public void saveReleaseOnArtist_shouldReturnExceptionDataNotFoundException_whenACallRecommendationServiceIsNotOK() {
+        Assertions.assertThrows(DataNotCreatedException.class, () -> {
+            ReleaseInput juara = ReleaseInput.builder()
+                    .artist(ArtistInput.builder().name("endank").build())
+                    .releaseDate("2022-03-28T00:00:00")
+                    .build();
+            Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+            Artist artist = Artist.builder()
+                    .name("endank")
+                    .build();
+            Mockito.when(artistService.getArtistByName(Mockito.any())).thenReturn(artist);
+
+            service.saveReleaseOnArtist(juara);
+
+            Mockito.verify(repository, Mockito.times(0)).save(Mockito.any());
         });
     }
 

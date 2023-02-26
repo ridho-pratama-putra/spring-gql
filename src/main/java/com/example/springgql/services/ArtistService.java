@@ -21,25 +21,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ArtistService {
     final ArtistRepository repository;
-    final RestTemplate restTemplate;
 
     public Artist saveArtistInput(ArtistInput artistInput) {
-        HttpEntity<Release> request = null;
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("X-Request-ID", MDC.get("X-Request-ID"));
-        request = new HttpEntity<>(Release.builder()
-        .artist(Artist.builder()
-        .name(artistInput.getName())
-        .build())
-        .build(), httpHeaders);
-       ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
-       if(newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-            Artist entity = Artist.builder()
-                    .name(artistInput.getName())
-                    .build();
-            return repository.save(entity);
-       }
-       throw new DataNotCreatedException(Artist.class);
+        Artist entity = Artist.builder()
+                .name(artistInput.getName())
+                .build();
+        return repository.save(entity);
     }
 
     public List<Artist> getAllArtist() {

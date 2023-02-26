@@ -26,31 +26,15 @@ class ArtistServiceTest {
     @MockBean
     ArtistRepository repository;
 
-    @MockBean
-    private RestTemplate restTemplate;
-
     @Test
     public void saveArtistInput_shouldReturnCreatedArtist_whenSuccessCreate() {
         String expectedName = "springGQLArtist";
         Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
         ArtistInput input = new ArtistInput(expectedName);
-        Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         Artist actualResult = service.saveArtistInput(input);
 
         Assertions.assertEquals(expectedName, actualResult.getName());
-    }
-
-    @Test
-    public void saveArtistInput_shouldThrowExceptionDataFailedToCreate_whenFailedToDoPostForEntity() {
-        Assertions.assertThrows(DataNotCreatedException.class, () -> {
-            String expectedName = "springGQLArtist";
-            Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
-            ArtistInput input = new ArtistInput(expectedName);
-            Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
-
-            service.saveArtistInput(input);
-        });
     }
 
     @Test

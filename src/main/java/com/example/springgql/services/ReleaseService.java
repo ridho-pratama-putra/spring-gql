@@ -1,6 +1,7 @@
 package com.example.springgql.services;
 
 import com.example.springgql.enums.CategoryEnum;
+import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
@@ -10,9 +11,14 @@ import com.example.springgql.utils.CursorUtil;
 import graphql.relay.*;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.slf4j.MDC;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +36,8 @@ public class ReleaseService {
     final ArtistService artistService;
     final MongoTemplate template;
 
+    final RestTemplate restTemplate;
+
     public Release saveReleaseOnArtist(ReleaseInput releaseInput) {
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         Artist artistByName = artistService.getArtistByName(releaseInput.getArtist().getName());
@@ -44,9 +52,22 @@ public class ReleaseService {
                 .releaseType(releaseInput.getReleaseType())
                 .artist(artistByName)
                 .build();
+
+        HttpEntity<Release> request = null;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("X-Request-ID", MDC.get("X-Request-ID"));
+        request = new HttpEntity<>(Release.builder()
+                .artist(artistByName)
+                .build(), httpHeaders);
+
+        ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
+            throw new DataNotCreatedException(Artist.class);
+        }
         Release save = repository.save(entity);
-//        artistService.updateAlbumOnArtist(save, artistByName);
         return save;
+
+//        artistService.updateAlbumOnArtist(save, artistByName);
     }
 
     public DefaultConnection<Release> getReleasesByArtistId(String id, int first, String after) {
