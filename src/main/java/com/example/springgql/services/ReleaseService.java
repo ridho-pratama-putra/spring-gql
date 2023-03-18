@@ -1,6 +1,5 @@
 package com.example.springgql.services;
 
-import com.example.springgql.enums.CategoryEnum;
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Release;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -147,5 +145,10 @@ public class ReleaseService {
         return artists.stream()
                 .collect(Collectors.toMap(Function.identity(), artist -> allByArtistIdIn.stream().filter(release -> release.getArtist().getId().equals(artist.getId()))
                         .collect(Collectors.toList())));
+    }
+
+    public List<Release> getAllReleasesRest() {
+        return getReleasesByAfterCursor(null, 10);
+
     }
 }
