@@ -77,4 +77,10 @@ public class GQLController {
     Connection<Release> allReleases(@Argument(name = "first") int first, @Argument(name = "after") String after) {
         return releaseService.getAllReleases(after, first);
     }
+
+    @MutationMapping
+    Mono<Release> updateRelease(@Argument(name = "id") String id, @Argument("releaseInput") ReleaseInput releaseInput) {
+        Release release = releaseService.updateReleaseById(id, releaseInput);
+        return Mono.just(release);
+    }
 }

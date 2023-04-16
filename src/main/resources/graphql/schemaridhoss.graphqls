@@ -9,6 +9,7 @@ type Query {
 type Mutation {
     createArtist(artistInput: ArtistInput): Artist
     createReleaseOnArtist(releaseInput: ReleaseInput): Release
+    updateRelease(id: ID, releaseInput: ReleaseInput): Release
 }
 
 input ArtistInput {

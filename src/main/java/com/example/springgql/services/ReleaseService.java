@@ -2,8 +2,8 @@ package com.example.springgql.services;
 
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
-import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
+import com.example.springgql.models.Release;
 import com.example.springgql.models.graphqlInput.ReleaseInput;
 import com.example.springgql.repositories.ReleaseRepository;
 import com.example.springgql.utils.CursorUtil;
@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -150,5 +151,19 @@ public class ReleaseService {
     public List<Release> getAllReleasesRest() {
         return getReleasesByAfterCursor(null, 10);
 
+    }
+
+    public Release updateReleaseById(String id, ReleaseInput releaseInput) {
+
+        Optional<Release> byId = repository.findById(id);
+        if (!byId.isPresent()) {
+            throw new DataNotFoundException("Data not found");
+        }
+
+        Release currentRelease = byId.get();
+        currentRelease.setTitle(releaseInput.getTitle());
+
+        Release updatedValue = repository.save(currentRelease);
+        return updatedValue;
     }
 }
