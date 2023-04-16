@@ -5,16 +5,20 @@ import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
+import com.example.springgql.models.graphqlInput.DeletePayload;
 import com.example.springgql.repositories.ArtistRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -43,6 +47,35 @@ public class ArtistService {
             throw new DataNotFoundException("not foung");
         }
         return byId.get();
+    }
+
+    public Artist updateArtistById(String id, ArtistInput artistInput) {
+        Optional<Artist> byId = repository.findById(id);
+        if (!byId.isPresent()) {
+            throw new DataNotFoundException("not foung");
+        }
+        Artist artist = byId.get();
+        artist.setName(artistInput.getName());
+        return artist;
+    }
+
+    public DeletePayload deleteById(String id) {
+        if (!repository.findById(id).isPresent()) {
+            throw new DataNotFoundException("Data not found");
+        }
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            return DeletePayload.builder()
+                    .message("")
+                    .success(false)
+                    .build();
+        }
+
+        return DeletePayload.builder()
+                .message("")
+                .success(true)
+                .build();
     }
 
 //    public void updateAlbumOnArtist(Album save, Artist artistByName) {

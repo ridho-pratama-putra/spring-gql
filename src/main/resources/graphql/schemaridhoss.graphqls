@@ -10,6 +10,9 @@ type Mutation {
     createArtist(artistInput: ArtistInput): Artist
     createReleaseOnArtist(releaseInput: ReleaseInput): Release
     updateRelease(id: ID, releaseInput: ReleaseInput): Release
+    updateArtist(id: ID, artistInput: ArtistInput): Artist
+    deleteReleaseById(id: ID): DeletePayload
+    deleteArtistById(id: ID): DeletePayload
 }
 
 input ArtistInput {
@@ -60,4 +63,9 @@ type PageInfo {
     hasNextPage: Boolean!
     startCursor: String
     endCursor: String
+}
+
+type DeletePayload {
+    success: Boolean!
+    message: String
 }

@@ -4,6 +4,7 @@ import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.Release;
+import com.example.springgql.models.graphqlInput.DeletePayload;
 import com.example.springgql.models.graphqlInput.ReleaseInput;
 import com.example.springgql.repositories.ReleaseRepository;
 import com.example.springgql.utils.CursorUtil;
@@ -11,6 +12,7 @@ import graphql.relay.*;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.MDC;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
@@ -165,5 +167,24 @@ public class ReleaseService {
 
         Release updatedValue = repository.save(currentRelease);
         return updatedValue;
+    }
+
+    public DeletePayload deleteById(String id) {
+        if (!repository.findById(id).isPresent()) {
+            throw new DataNotFoundException("Data not found");
+        }
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            return DeletePayload.builder()
+                    .message("")
+                    .success(false)
+                    .build();
+        }
+
+        return DeletePayload.builder()
+                .message("")
+                .success(true)
+                .build();
     }
 }

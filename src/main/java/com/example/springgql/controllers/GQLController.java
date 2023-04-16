@@ -4,6 +4,7 @@ import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.logging.LoggingService;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.Artist;
+import com.example.springgql.models.graphqlInput.DeletePayload;
 import com.example.springgql.models.graphqlInput.ReleaseInput;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.services.ReleaseService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -82,5 +84,34 @@ public class GQLController {
     Mono<Release> updateRelease(@Argument(name = "id") String id, @Argument("releaseInput") ReleaseInput releaseInput) {
         Release release = releaseService.updateReleaseById(id, releaseInput);
         return Mono.just(release);
+    }
+
+    @MutationMapping
+    Mono<Artist> updateArtist(@Argument(name = "id") String id, @Argument("artistInput") ArtistInput artistInput) {
+        Artist artist = artistService.updateArtistById(id, artistInput);
+        return Mono.just(artist);
+    }
+
+    @MutationMapping
+    Mono<DeletePayload> deleteReleaseById(@Argument(name = "id") String id) {
+        DeletePayload deletePayload = releaseService.deleteById(id);
+        return Mono.just(deletePayload);
+    }
+
+    @MutationMapping
+    Mono<DeletePayload> deleteArtistById(@Argument(name = "id") String id) {
+        Map<Artist, List<Release>> releasesByArtistIds = releaseService.getReleasesByArtistIds(Collections.singletonList(Artist.builder().id(id).build()));
+
+        for (Map.Entry<Artist, List<Release>> entry : releasesByArtistIds.entrySet()) {
+            List<Release> releases = entry.getValue();
+            if (releases.size() > 1) {
+                // artist mempunyai lebih dari satu release
+                // tambahkan implementasi selanjutnya disini
+                throw new DataNotFoundException("data used");
+            }
+        }
+
+        DeletePayload deletePayload = artistService.deleteById(id);
+        return Mono.just(deletePayload);
     }
 }
