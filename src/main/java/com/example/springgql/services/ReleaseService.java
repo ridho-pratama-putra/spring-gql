@@ -175,6 +175,10 @@ public class ReleaseService {
         Release currentRelease = byId.get();
         currentRelease.setTitle(releaseInput.getTitle());
 
+        if (releaseInput.getCategory() != currentRelease.getCategory()) {
+            currentRelease.setCategory(releaseInput.getCategory());
+        }
+
         Release updatedValue = repository.save(currentRelease);
         return updatedValue;
     }

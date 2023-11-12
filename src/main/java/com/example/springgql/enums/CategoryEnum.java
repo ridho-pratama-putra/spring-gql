@@ -10,6 +10,7 @@ public enum CategoryEnum {
     PUNK("Punk"),
     COUNTRY("Country"),
     METAL("Metal"),
+    DANGFUT("Dangdut"),
     ;
 
     String displayText;
