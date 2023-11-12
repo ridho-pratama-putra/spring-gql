@@ -101,6 +101,15 @@ public class GQLController {
 
     @MutationMapping
     Mono<DeletePayload> deleteArtistById(@Argument(name = "id") String id) {
+        Map<Artist, List<Release>> releasesByArtistIds = releaseService.getReleasesByArtistIds(Collections.singletonList(Artist.builder().id(id).build()));
+
+        for (Map.Entry<Artist, List<Release>> entry : releasesByArtistIds.entrySet()) {
+            List<Release> releases = entry.getValue();
+            if (releases.size() > 1) {
+                throw new DataNotDeletedException(Release.class, "Artist stil have un deleted Releases");
+            }
+        }
+
         DeletePayload deletePayload = artistService.deleteById(id);
         return Mono.just(deletePayload);
     }

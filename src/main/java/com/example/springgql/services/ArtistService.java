@@ -2,10 +2,8 @@ package com.example.springgql.services;
 
 import com.example.springgql.exception.Constants;
 import com.example.springgql.exception.DataNotCreatedException;
-import com.example.springgql.exception.DataNotDeletedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Artist;
-import com.example.springgql.models.Release;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.models.graphqlInput.DeletePayload;
 import com.example.springgql.repositories.ArtistRepository;
@@ -15,16 +13,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ArtistService {
     final ArtistRepository repository;
-    final ReleaseService releaseService;
 
     public Artist saveArtistInput(ArtistInput artistInput) {
         artistInput.setName(artistInput.getName().toLowerCase());
@@ -70,14 +65,7 @@ public class ArtistService {
         if (!repository.findById(id).isPresent()) {
             throw new DataNotFoundException(Artist.class);
         }
-        Map<Artist, List<Release>> releasesByArtistIds = releaseService.getReleasesByArtistIds(Collections.singletonList(Artist.builder().id(id).build()));
-
-        for (Map.Entry<Artist, List<Release>> entry : releasesByArtistIds.entrySet()) {
-            List<Release> releases = entry.getValue();
-            if (releases.size() > 0) {
-                throw new DataNotDeletedException(Artist.class, "Artist stil have un deleted Releases");
-            }
-        }
+        
         try {
             repository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
