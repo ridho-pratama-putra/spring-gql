@@ -26,7 +26,7 @@ input ReleaseInput {
     releaseDate: String!
     artist: ArtistInput!
     releaseType: String!
-    category: String!
+    category: [String]!
 }
 
 type Artist {
@@ -44,7 +44,7 @@ type Release {
     creationDate:String!
     lastModifiedDate:String!
     lastModifiedUserId: String!
-    category: String
+    category: [String]
     releaseType: String!
     releaseDate: String!
     duration: String!

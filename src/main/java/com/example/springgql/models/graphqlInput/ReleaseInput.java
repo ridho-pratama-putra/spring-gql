@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
@@ -19,7 +22,7 @@ public class ReleaseInput {
     String totalSong;
     String duration;
 
-    CategoryEnum category;
+    List<CategoryEnum> category;
     ReleaseType releaseType;
     ArtistInput artist;
 }

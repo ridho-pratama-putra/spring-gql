@@ -29,7 +29,7 @@ public class Release {
     @Id
     String id;
     String title;
-    CategoryEnum category;
+    List<CategoryEnum> category;
 
     ReleaseType releaseType;
 

@@ -207,7 +207,7 @@ class GQLControllerTest {
     public void createReleaseOnArtist_shouldReturnCreatedAlbum_whenCalled() {
         Mockito.when(releaseService.saveReleaseOnArtist(Mockito.any())).thenReturn(Release.builder()
                 .title("album1")
-                .category(CategoryEnum.ROCK)
+                .category(Collections.singletonList(CategoryEnum.ROCK))
                 .releaseDate(LocalDateTime.now())
                 .creationDate(LocalDateTime.now())
                 .build());
