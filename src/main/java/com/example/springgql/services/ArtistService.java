@@ -58,6 +58,7 @@ public class ArtistService {
         }
         Artist artist = byId.get();
         artist.setName(artistInput.getName());
+        artist.setDisplayName(artistInput.getDisplayName());
         return artist;
     }
 

@@ -3,6 +3,7 @@ package com.example.springgql.services;
 import com.example.springgql.exception.Constants;
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
+import com.example.springgql.exception.DataNotUpdatedException;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.graphqlInput.DeletePayload;
@@ -41,6 +42,9 @@ public class ReleaseService {
     final RestTemplate restTemplate;
 
     public Release saveReleaseOnArtist(ReleaseInput releaseInput) {
+        if (releaseInput.getArtist() == null) {
+            throw new DataNotCreatedException(Release.class, Constants.MISSING_REQUIRED_FIELD);
+        }
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         Artist artistByName = artistService.getArtistById(releaseInput.getArtist().getId());
         if (artistByName == null) {
@@ -67,10 +71,10 @@ public class ReleaseService {
                 .artist(artistByName)
                 .build(), httpHeaders);
 
-        ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
-        if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-            throw new DataNotCreatedException(Release.class);
-        }
+        // ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        // if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
+        //     throw new DataNotCreatedException(Release.class);
+        // }
         Release save = repository.save(entity);
         return save;
 

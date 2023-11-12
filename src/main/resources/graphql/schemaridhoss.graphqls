@@ -23,10 +23,10 @@ input ArtistInput {
 
 input ReleaseInput {
     title: String!
-    releaseDate: String!
-    artist: ArtistInput!
-    releaseType: String!
-    category: [String]!
+    releaseDate: String
+    artist: ArtistInput
+    releaseType: String
+    category: [String]
 }
 
 type Artist {
