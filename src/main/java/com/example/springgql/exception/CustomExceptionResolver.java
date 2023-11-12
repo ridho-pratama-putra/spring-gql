@@ -22,7 +22,7 @@ public class CustomExceptionResolver extends DataFetcherExceptionResolverAdapter
         Map<String, Object> extensionCustom = new HashMap<>();
         extensionCustom.put("traceId", tracer.nextSpan().context().traceId());
         return GraphqlErrorBuilder.newError()
-                .errorType(ErrorType.valueOf(ex.getCause().getMessage()))
+                .errorType(ErrorType.BAD_REQUEST)
                 .message(ex.getMessage())
                 .path(env.getExecutionStepInfo().getPath())
                 .location(env.getField().getSourceLocation())

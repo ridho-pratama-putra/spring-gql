@@ -16,7 +16,9 @@ type Mutation {
 }
 
 input ArtistInput {
-    name: String!
+    id: ID
+    name: String
+    displayName: String
 }
 
 input ReleaseInput {
@@ -30,6 +32,7 @@ input ReleaseInput {
 type Artist {
     id: ID
     name: String!
+    displayName: String!
     releases: [Release]
 }
 

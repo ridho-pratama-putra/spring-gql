@@ -12,5 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document
 public class ArtistInput {
+    String id;
     String name;
+    String displayName;
 }

@@ -157,7 +157,7 @@ class GQLControllerTest {
 
     @Test
     public void artist_shouldReturnListOfArtistWithAlbum_whenCalled() {
-        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add")));
+        Mockito.when(artistService.getAllArtist()).thenReturn(Arrays.asList(new Artist("ad", "add", "display name")));
         Map<Artist, List<Release>> mockBatchMappingReult = new HashMap<>();
 //        mockBatchMappingReult.put(Artist.builder().id("sad").name("saassa").build(), Arrays.asList(new Album(null, "title", CategoryEnum.ROCK, null, null, null, null)));
         Mockito.when(releaseService.getReleasesByArtistIds(Mockito.any())).thenReturn(mockBatchMappingReult);

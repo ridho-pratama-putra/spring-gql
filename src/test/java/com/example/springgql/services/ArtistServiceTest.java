@@ -1,6 +1,5 @@
 package com.example.springgql.services;
 
-import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.ArtistRepository;
@@ -10,10 +9,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +25,10 @@ class ArtistServiceTest {
     public void saveArtistInput_shouldReturnCreatedArtist_whenSuccessCreate() {
         String expectedName = "springGQLArtist";
         Mockito.when(repository.save(Mockito.any())).thenReturn(Artist.builder().name(expectedName).build());
-        ArtistInput input = new ArtistInput(expectedName);
+
+        ArtistInput input = ArtistInput.builder()
+        .name(expectedName)
+        .build();
 
         Artist actualResult = service.saveArtistInput(input);
 

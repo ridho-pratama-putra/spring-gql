@@ -1,5 +1,6 @@
 package com.example.springgql.services;
 
+import com.example.springgql.exception.Constants;
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Artist;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,9 +41,14 @@ public class ReleaseService {
 
     public Release saveReleaseOnArtist(ReleaseInput releaseInput) {
         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-        Artist artistByName = artistService.getArtistByName(releaseInput.getArtist().getName());
+        Artist artistByName = artistService.getArtistById(releaseInput.getArtist().getId());
         if (artistByName == null) {
-            throw new DataNotFoundException("Data not found");
+            throw new DataNotFoundException(Artist.class);
+        }
+        ObjectId artistId = new ObjectId(releaseInput.getArtist().getId());
+        Release findByTitleAndArtistId = repository.findByTitleAndArtistId(releaseInput.getTitle(), artistId);
+        if (findByTitleAndArtistId != null) {
+            throw new DataNotCreatedException(Release.class, Constants.RECORD_ALREADY_EXIST);
         }
         Release entity;
         entity = Release.builder()
@@ -61,10 +66,10 @@ public class ReleaseService {
                 .artist(artistByName)
                 .build(), httpHeaders);
 
-        ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
-        if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-            throw new DataNotCreatedException(entity.getClass().toString());
-        }
+        // ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        // if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
+            // throw new DataNotCreatedException(entity.getClass().toString());
+        // }
         Release save = repository.save(entity);
         return save;
 
@@ -159,7 +164,7 @@ public class ReleaseService {
 
         Optional<Release> byId = repository.findById(id);
         if (!byId.isPresent()) {
-            throw new DataNotFoundException("Data not found");
+            throw new DataNotFoundException(Release.class);
         }
 
         Release currentRelease = byId.get();
@@ -171,7 +176,7 @@ public class ReleaseService {
 
     public DeletePayload deleteById(String id) {
         if (!repository.findById(id).isPresent()) {
-            throw new DataNotFoundException("Data not found");
+            throw new DataNotFoundException(Release.class);
         }
         try {
             repository.deleteById(id);

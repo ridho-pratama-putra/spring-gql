@@ -18,6 +18,7 @@ public class Artist {
     @Id
     String id;
     String name;
+    String displayName;
 
 //    @DocumentReference(lazy=true)
 //    private List<Album> albumsList;

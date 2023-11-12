@@ -37,7 +37,7 @@ public class GQLController {
     @QueryMapping
     public Mono<Artist> artistById(@Argument(name = "id") String id) {
         if ("alex".equals(id)) {
-            throw new DataNotFoundException("Data not found");
+            throw new DataNotFoundException(Artist.class);
         }
         return Mono.just(artistService.getArtistById(id));
     }
@@ -107,7 +107,7 @@ public class GQLController {
             if (releases.size() > 1) {
                 // artist mempunyai lebih dari satu release
                 // tambahkan implementasi selanjutnya disini
-                throw new DataNotFoundException("data used");
+                throw new DataNotFoundException(Release.class);
             }
         }
 
