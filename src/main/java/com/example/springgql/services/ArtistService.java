@@ -27,9 +27,15 @@ public class ArtistService {
     final ArtistRepository repository;
 
     public Artist saveArtistInput(ArtistInput artistInput) {
+        artistInput.setName(artistInput.getName().toLowerCase());
+        Artist findItemByName = repository.findItemByName(artistInput.getName());
         Artist entity = Artist.builder()
                 .name(artistInput.getName())
                 .build();
+
+        if (null != findItemByName) {
+            throw new DataNotCreatedException(entity);
+        }
         return repository.save(entity);
     }
 

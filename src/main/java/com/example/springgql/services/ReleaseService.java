@@ -63,7 +63,7 @@ public class ReleaseService {
 
         ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
         if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-            throw new DataNotCreatedException(Artist.class);
+            throw new DataNotCreatedException(entity.getClass().toString());
         }
         Release save = repository.save(entity);
         return save;
