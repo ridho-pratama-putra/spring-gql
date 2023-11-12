@@ -46,12 +46,17 @@ class ReleaseServiceTest {
                 .build();
         Release release = Release.builder()
                 .title("juara")
+                .artist(Artist.builder()
+                    .name("endank")
+                    .build())
                 .build();
-        Mockito.when(artistService.getArtistByName(Mockito.any())).thenReturn(artist);
+        Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
         Mockito.when(repository.save(Mockito.any())).thenReturn(release);
         ReleaseInput juara = ReleaseInput.builder()
                 .title("juara")
-                .artist(ArtistInput.builder().name("endank").build())
+                .artist(ArtistInput.builder().name("endank")
+                .id("655080fd08a74016c35e5ad3")
+                .build())
                 .releaseDate("2012-12-13T00:00:00")
                 .build();
         Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
@@ -77,14 +82,14 @@ class ReleaseServiceTest {
     public void saveReleaseOnArtist_shouldReturnExceptionDataNotFoundException_whenACallRecommendationServiceIsNotOK() {
         Assertions.assertThrows(DataNotCreatedException.class, () -> {
             ReleaseInput juara = ReleaseInput.builder()
-                    .artist(ArtistInput.builder().name("endank").build())
+                    .artist(ArtistInput.builder().id("655080fd08a74016c35e5ad3").name("endank").build())
                     .releaseDate("2022-03-28T00:00:00")
                     .build();
             Mockito.when(restTemplate.postForEntity(Mockito.contains("/album"), Mockito.any(), Mockito.any())).thenReturn(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
             Artist artist = Artist.builder()
                     .name("endank")
                     .build();
-            Mockito.when(artistService.getArtistByName(Mockito.any())).thenReturn(artist);
+            Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
 
             service.saveReleaseOnArtist(juara);
 

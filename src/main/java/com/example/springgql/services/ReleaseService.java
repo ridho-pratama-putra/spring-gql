@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -66,10 +67,10 @@ public class ReleaseService {
                 .artist(artistByName)
                 .build(), httpHeaders);
 
-        // ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
-        // if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-            // throw new DataNotCreatedException(entity.getClass().toString());
-        // }
+        ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
+            throw new DataNotCreatedException(Release.class);
+        }
         Release save = repository.save(entity);
         return save;
 
