@@ -47,7 +47,7 @@ public class ReleaseService {
             throw new DataNotFoundException(Artist.class);
         }
         ObjectId artistId = new ObjectId(releaseInput.getArtist().getId());
-        Release findByTitleAndArtistId = repository.findByTitleAndArtistId(releaseInput.getTitle(), artistId);
+        Release findByTitleAndArtistId = repository.findByTitleIgnoreCaseAndArtistId(releaseInput.getTitle(), artistId);
         if (findByTitleAndArtistId != null) {
             throw new DataNotCreatedException(Release.class, Constants.RECORD_ALREADY_EXIST);
         }

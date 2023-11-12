@@ -24,5 +24,5 @@ public interface ReleaseRepository extends MongoRepository<Release, String>, Que
 
     List<Release> findAllByArtistIdIn(List<ObjectId> artists);
 
-    Release findByTitleAndArtistId(String title, ObjectId artistId);
+    Release findByTitleIgnoreCaseAndArtistId(String title, ObjectId artistId);
 }
