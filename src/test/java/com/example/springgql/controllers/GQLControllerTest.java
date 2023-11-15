@@ -177,6 +177,7 @@ class GQLControllerTest {
                 .path("artists.[*].albums")
                 .entityList(Release.class)
         ;
+        Mockito.verify(releaseService, Mockito.times(1)).getReleasesByArtistIds(Mockito.any());
     }
 
     @Test

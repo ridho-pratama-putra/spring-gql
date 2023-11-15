@@ -3,7 +3,6 @@ package com.example.springgql.services;
 import com.example.springgql.exception.Constants;
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
-import com.example.springgql.exception.DataNotUpdatedException;
 import com.example.springgql.models.Artist;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.graphqlInput.DeletePayload;
@@ -125,7 +124,7 @@ public class ReleaseService {
         return new DefaultConnection<>(defaultEdges, defaultPageInfo);
     }
 
-    public List<Release> getReleasesByAfterCursor(String afterCursor, int limit) {
+    private List<Release> getReleasesByAfterCursor(String afterCursor, int limit) {
         if (afterCursor == null || afterCursor.isEmpty()) {
             return repository.findAll(Pageable.ofSize(limit)).toList();
         }
@@ -137,7 +136,7 @@ public class ReleaseService {
         return repository.findAllByIdGreaterThan(objectId, Pageable.ofSize(limit));
     }
 
-    public List<Release> getReleasesOnArtistByAfterCursor(String id, String afterCursor, int limit) {
+    private List<Release> getReleasesOnArtistByAfterCursor(String id, String afterCursor, int limit) {
         ObjectId artistId = new ObjectId(id);
         
         if (afterCursor == null || afterCursor.isEmpty()) {

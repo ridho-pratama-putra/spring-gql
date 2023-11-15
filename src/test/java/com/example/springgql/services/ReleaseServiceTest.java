@@ -7,7 +7,11 @@ import com.example.springgql.models.Artist;
 import com.example.springgql.models.graphqlInput.ReleaseInput;
 import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.repositories.ReleaseRepository;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 import graphql.relay.DefaultConnection;
+
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class ReleaseServiceTest {
@@ -40,15 +45,27 @@ class ReleaseServiceTest {
     private RestTemplate restTemplate;
 
     @Test
+    public void saveReleaseOnArtist_shouldReturnExceptionDataNotCreatedException_whenRequestDoesntHaveArtistInputDueToOptionalFromGQLSchema() {
+        Assertions.assertThrows(DataNotCreatedException.class, () -> {
+            ReleaseInput juara = ReleaseInput.builder()
+                    .artist(null)
+                    .releaseDate("2022-03-28T00:00:00")
+                    .build();
+
+            service.saveReleaseOnArtist(juara);
+
+            Mockito.verify(repository, Mockito.times(0)).save(Mockito.any());
+        });
+    }
+
+    @Test
     public void saveReleaseOnArtist_shouldReturnEntity_whenSuccessSaveArtistNameExistAndCallRecommendationServiceReturnOK() {
         Artist artist = Artist.builder()
                 .name("endank")
                 .build();
         Release release = Release.builder()
                 .title("juara")
-                .artist(Artist.builder()
-                    .name("endank")
-                    .build())
+                .artist(artist)
                 .build();
         Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
         Mockito.when(repository.save(Mockito.any())).thenReturn(release);
@@ -72,7 +89,26 @@ class ReleaseServiceTest {
             ReleaseInput juara = ReleaseInput.builder()
                     .artist(ArtistInput.builder().name("endank").build())
                     .build();
-            Mockito.when(artistService.getArtistByName(Mockito.any())).thenReturn(null);
+            Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(null);
+
+            service.saveReleaseOnArtist(juara);
+        });
+    }
+
+    @Test
+    public void saveReleaseOnArtist_shouldReturnDataNotCreatedException_whenFoundReleaseWithSameTitle() {
+        Assertions.assertThrows(DataNotCreatedException.class, () -> {
+            Artist artist = Artist.builder()
+                .name("endank")
+                .build();
+            ReleaseInput juara = ReleaseInput.builder()
+                    .artist(ArtistInput.builder()
+                        .id("655080fd08a74016c35e5ad3")
+                    .name("endank").build())
+                    .title("Manusia")
+                    .build();
+            Mockito.when(artistService.getArtistById(Mockito.any())).thenReturn(artist);
+            Mockito.when(repository.findByTitleIgnoreCaseAndArtistId(Mockito.any(), Mockito.any())).thenReturn(Release.builder().build());
 
             service.saveReleaseOnArtist(juara);
         });
@@ -98,7 +134,7 @@ class ReleaseServiceTest {
     }
 
     @Test
-    public void getAlbumsByArtistId_shouldReturnEntity_whenDataIsExist() {
+    public void getReleasesByArtistId_shouldReturnEntity_whenDataIsExist() {
         String fakeID = "63c911b6a272812098224d7c";
         ArrayList<Release> releases = new ArrayList<>();
         releases.add(Release.builder().id(fakeID).build());
@@ -109,19 +145,47 @@ class ReleaseServiceTest {
     }
 
     @Test
-    public void getAlbumsByAfterCursor_shouldCallfindAllByIdGreaterThan_whenAfterCursorIsNotEmptyValue() {
-        service.getReleasesByAfterCursor("NjNhOWIyYzY5MzRhNzk3ZGZlMzMyMmY5", 2);
+    public void getReleasesByArtistId_shouldReturnEntity_whenDataIsExistAndPassPaginationAfterValue() {
+        String fakeID = "63c911b6a272812098224d7c";
+        String fakeCursor = "NjNmYTI2MTMwN2IzNGUyZTI1OTBiZmU4";
+        ArrayList<Release> releases = new ArrayList<>();
+        releases.add(Release.builder().id(fakeID).build());
+        Mockito.when(repository.findAllByArtistId(Mockito.any(), Mockito.any())).thenReturn(releases);
 
-        Mockito.verify(repository, Mockito.times(1)).findAllByIdGreaterThan(Mockito.any(), Mockito.any());
+        DefaultConnection<Release> albumsByArtistId = service.getReleasesByArtistId(fakeID, 1, fakeCursor);
+        Assertions.assertNotNull(albumsByArtistId);
     }
 
     @Test
-    public void getAlbumsByAfterCursor_shouldCallfindAllByIdGreaterThan_whenAfterCursorIsEmptyValue() {
-        Page page = new PageImpl(new ArrayList<>());
-        Mockito.when(repository.findAll(Mockito.any(Pageable.class))).thenReturn(page);
+    public void getAllReleases_shouldCallRepositoryfindAllByIdGreaterThan_whenAfterCursorValueIsNotEmpty() {
+        service.getAllReleases("NjNmYTI2MTMwN2IzNGUyZTI1OTBiZmU4", 2);
 
-        service.getReleasesByAfterCursor(null, 2);
+        Mockito.verify(repository, Mockito.times(1)).findAllByIdGreaterThan(Mockito.any() ,(Pageable) Mockito.any());
+    }
+
+    @Test
+    public void getAllReleases_shouldCallRepositoryfindAll_whenAfterCursorValueIsEmpty() {
+        List<Release> nonEmptyRelease = new ArrayList<>();
+        nonEmptyRelease.add(Release.builder()
+            .id("63fa261307b34e2e2590bfe8")
+            .build());
+        Page page = new PageImpl(nonEmptyRelease);
+        Mockito.when(repository.findAll(Mockito.any(Pageable.class))).thenReturn(page);
+        
+        service.getAllReleases(null, 2);
 
         Mockito.verify(repository, Mockito.times(1)).findAll((Pageable) Mockito.any());
+    }
+
+    @Test
+    public void getReleasesByArtistIds_shouldCallRepositoryfindAllByArtistIdIn_whenCalled() {
+        Artist artist = Artist.builder().id("63fa261307b34e2e2590bfe8").build();
+        List<Artist> artists = Collections.singletonList(artist);
+        List<Release> releases = Collections.singletonList(Release.builder().artist(artist).build());
+        Mockito.when(repository.findAllByArtistIdIn(Mockito.anyList())).thenReturn(releases);
+
+        service.getReleasesByArtistIds(artists);
+
+        Mockito.verify(repository, Mockito.times(1)).findAllByArtistIdIn(Mockito.anyList());
     }
 }
