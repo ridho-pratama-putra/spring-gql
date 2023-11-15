@@ -70,14 +70,9 @@ public class ReleaseService {
                 .artist(artistByName)
                 .build(), httpHeaders);
 
-        ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
-        if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-            throw new DataNotCreatedException(Release.class);
-        }
+        restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
         Release save = repository.save(entity);
         return save;
-
-//        artistService.updateAlbumOnArtist(save, artistByName);
     }
 
     public DefaultConnection<Release> getReleasesByArtistId(String id, int first, String after) {
