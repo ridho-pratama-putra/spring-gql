@@ -45,7 +45,7 @@ public class ReleaseService {
         if (releaseInput.getArtist() == null) {
             throw new DataNotCreatedException(Release.class, Constants.MISSING_REQUIRED_FIELD);
         }
-        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+        // SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
         Artist artistByName = artistService.getArtistById(releaseInput.getArtist().getId());
         if (artistByName == null) {
             throw new DataNotFoundException(Artist.class);
@@ -71,10 +71,10 @@ public class ReleaseService {
                 .artist(artistByName)
                 .build(), httpHeaders);
 
-        // ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
-        // if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
-        //     throw new DataNotCreatedException(Release.class);
-        // }
+        ResponseEntity<Release> newestReleaseRecommendationResult = restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        if(!newestReleaseRecommendationResult.getStatusCode().is2xxSuccessful()) {
+            throw new DataNotCreatedException(Release.class);
+        }
         Release save = repository.save(entity);
         return save;
 

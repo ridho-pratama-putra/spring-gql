@@ -79,7 +79,7 @@ class ReleaseServiceTest {
     }
 
     @Test
-    public void saveReleaseOnArtist_shouldReturnExceptionDataNotFoundException_whenACallRecommendationServiceIsNotOK() {
+    public void saveReleaseOnArtist_shouldReturnExceptionDataNotCreatedException_whenACallRecommendationServiceIsNotOK() {
         Assertions.assertThrows(DataNotCreatedException.class, () -> {
             ReleaseInput juara = ReleaseInput.builder()
                     .artist(ArtistInput.builder().id("655080fd08a74016c35e5ad3").name("endank").build())
