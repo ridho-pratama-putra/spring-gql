@@ -12,6 +12,8 @@ import com.example.springgql.utils.CursorUtil;
 import graphql.relay.*;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +40,8 @@ public class ReleaseService {
     final ReleaseRepository repository;
     final ArtistService artistService;
     final MongoTemplate template;
+
+    Logger logger = LoggerFactory.getLogger(ReleaseService.class);
 
     final RestTemplate restTemplate;
 
@@ -70,7 +75,12 @@ public class ReleaseService {
                 .artist(artistByName)
                 .build(), httpHeaders);
 
-        restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        try {
+            restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
+        } catch (RestClientException restClientException) {
+            logger.info("::: " + restClientException.getMessage());
+            throw new DataNotCreatedException(Release.class, Constants.INTERNAL_SERVER_ERROR);
+        }
         Release save = repository.save(entity);
         return save;
     }
