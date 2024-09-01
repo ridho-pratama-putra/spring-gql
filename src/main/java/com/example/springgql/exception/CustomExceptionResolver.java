@@ -23,25 +23,26 @@ public class CustomExceptionResolver extends DataFetcherExceptionResolverAdapter
     protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
         Map<String, Object> extensionCustom = new HashMap<>();
         extensionCustom.put("traceId", tracer.nextSpan().context().traceId());
-            if (InternalServerError.class.equals(ex.getClass())) {
-                return GraphqlErrorBuilder.newError()
-                    .errorType(ErrorType.INTERNAL_ERROR)
-                    .message(ex.getMessage())
-                    .path(env.getExecutionStepInfo().getPath())
-                    .location(env.getField().getSourceLocation())
-                    .extensions(extensionCustom)
-                    .build();
-            }
-            
-            if (ConnectException.class.equals(ex.getCause().getClass())) {
-                return GraphqlErrorBuilder.newError()
-                    .errorType(ErrorType.INTERNAL_ERROR)
-                    .message(ex.getMessage())
-                    .path(env.getExecutionStepInfo().getPath())
-                    .location(env.getField().getSourceLocation())
-                    .extensions(extensionCustom)
-                    .build();
-            }
+        if (InternalServerError.class.equals(ex.getClass())) {
+            System.out.println(ex);
+            return GraphqlErrorBuilder.newError()
+                .errorType(ErrorType.INTERNAL_ERROR)
+                .message(ex.getMessage())
+                .path(env.getExecutionStepInfo().getPath())
+                .location(env.getField().getSourceLocation())
+                .extensions(extensionCustom)
+                .build();
+        }
+        
+        if (ConnectException.class.equals(ex.getClass())) { // forget for which kind of case
+            return GraphqlErrorBuilder.newError()
+                .errorType(ErrorType.INTERNAL_ERROR)
+                .message(ex.getMessage())
+                .path(env.getExecutionStepInfo().getPath())
+                .location(env.getField().getSourceLocation())
+                .extensions(extensionCustom)
+                .build();
+        }
         return GraphqlErrorBuilder.newError()
                 .errorType(ErrorType.BAD_REQUEST)
                 .message(ex.getMessage())
