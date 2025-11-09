@@ -1,33 +1,39 @@
 package com.example.springgql.controllers;
 
-import com.example.springgql.exception.DataNotDeletedException;
-import com.example.springgql.exception.DataNotFoundException;
-import com.example.springgql.logging.LoggingService;
-import com.example.springgql.models.Release;
-import com.example.springgql.models.Artist;
-import com.example.springgql.models.graphqlInput.DeletePayload;
-import com.example.springgql.models.graphqlInput.ReleaseInput;
-import com.example.springgql.models.graphqlInput.ArtistInput;
-import com.example.springgql.services.ReleaseService;
-import com.example.springgql.services.ArtistService;
-import graphql.relay.Connection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.BatchMapping;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+
+import com.example.springgql.exception.DataNotDeletedException;
+import com.example.springgql.exception.DataNotFoundException;
+import com.example.springgql.logging.LoggingService;
+import com.example.springgql.models.Artist;
+import com.example.springgql.models.Release;
+import com.example.springgql.models.graphqlInput.ArtistInput;
+import com.example.springgql.models.graphqlInput.DeletePayload;
+import com.example.springgql.models.graphqlInput.ReleaseInput;
+import com.example.springgql.services.ArtistService;
+import com.example.springgql.services.ReleaseService;
+
+import graphql.relay.Connection;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 public class GQLController {
     public final ArtistService artistService;
     public final ReleaseService releaseService;
     public final LoggingService log;
+    private final Logger logger = LoggerFactory.getLogger(GQLController.class);
 
     GQLController(ArtistService artistService, ReleaseService releaseService, LoggingService log) {
         this.artistService = artistService;
@@ -66,9 +72,25 @@ public class GQLController {
 //        return Flux.fromIterable(albumService.getAlbumsByArtistId(artist.getId()));
 //    }
 
-    @BatchMapping
-    Map<Artist, List<Release>> releases(List<Artist> artists) {
-        return releaseService.getReleasesByArtistIds(artists);
+    // @BatchMapping
+    // Map<Artist, List<Release>> releases(List<Artist> artists) {
+    //     logger.info("batchMapping releases for artists");
+    //     return releaseService.getReleasesByArtistIds(artists);
+    // }
+
+    @BatchMapping(typeName = "Artist", value = "releases")
+    public Map<Artist, List<Release>> releases(@Argument(name = "id") List<Artist> artists) {
+        logger.info("batchMapping releases for artists");
+        // 1. Ekstraksi ID secara eksplisit dari List<Artist>
+        List<String> artistIds = artists.stream()
+            .map(Artist::getId) // Asumsi Java object Artist memiliki metode getId()
+            .collect(Collectors.toList());
+
+        // 2. Panggil service yang efisien
+        Map<Artist, List<Release>> releasesMap = releaseService.getReleasesByArtistIds(artistIds);
+
+        // 3. Kembalikan Map<String ID, List<Release>>
+        return releasesMap;
     }
 
     @QueryMapping
@@ -101,7 +123,7 @@ public class GQLController {
 
     @MutationMapping
     Mono<DeletePayload> deleteArtistById(@Argument(name = "id") String id) {
-        Map<Artist, List<Release>> releasesByArtistIds = releaseService.getReleasesByArtistIds(Collections.singletonList(Artist.builder().id(id).build()));
+        Map<Artist, List<Release>> releasesByArtistIds = releaseService.getReleasesByArtistIds(Collections.singletonList(id));
 
         for (Map.Entry<Artist, List<Release>> entry : releasesByArtistIds.entrySet()) {
             List<Release> releases = entry.getValue();

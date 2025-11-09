@@ -32,7 +32,7 @@ input ReleaseInput {
 type Artist {
     id: ID
     name: String!
-    displayName: String!
+    displayName: String
     releases: [Release]
 }
 
@@ -48,7 +48,7 @@ type Release {
     releaseType: String!
     releaseDate: String!
     duration: String!
-    artist: Artist!
+    artist: [Artist!]
 }
 
 type ReleaseConnection {

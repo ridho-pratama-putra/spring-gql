@@ -4,11 +4,14 @@ import com.example.springgql.exception.Constants;
 import com.example.springgql.exception.DataNotCreatedException;
 import com.example.springgql.exception.DataNotFoundException;
 import com.example.springgql.models.Artist;
+import com.example.springgql.models.QRelease;
 import com.example.springgql.models.Release;
 import com.example.springgql.models.graphqlInput.DeletePayload;
 import com.example.springgql.models.graphqlInput.ReleaseInput;
 import com.example.springgql.repositories.ReleaseRepository;
 import com.example.springgql.utils.CursorUtil;
+import com.querydsl.core.types.Predicate;
+
 import graphql.relay.*;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -20,30 +23,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReleaseService {
 
-    final ReleaseRepository repository;
-    final ArtistService artistService;
-    final MongoTemplate template;
+    private final ReleaseRepository repository;
+    private final ArtistService artistService;
+    private final MongoTemplate template;
 
     Logger logger = LoggerFactory.getLogger(ReleaseService.class);
 
-    final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public Release saveReleaseOnArtist(ReleaseInput releaseInput) {
         if (releaseInput.getArtist() == null) {
@@ -65,14 +67,14 @@ public class ReleaseService {
                 .releaseDate(LocalDateTime.parse(releaseInput.getReleaseDate()))
                 .category(releaseInput.getCategory())
                 .releaseType(releaseInput.getReleaseType())
-                .artist(artistByName)
+                .artist(List.of(artistByName))
                 .build();
 
         HttpEntity<Release> request = null;
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("X-Request-ID", MDC.get("X-Request-ID"));
         request = new HttpEntity<>(Release.builder()
-                .artist(artistByName)
+                .artist(List.of(artistByName))
                 .build(), httpHeaders);
 
         try {
@@ -156,12 +158,38 @@ public class ReleaseService {
         return repository.findAllByIdGreaterThanAndArtistId(objectId, artistId, Pageable.ofSize(limit));
     }
 
-    public Map<Artist, List<Release>> getReleasesByArtistIds(List<Artist> artists) {
-        List<ObjectId> collect = artists.stream().map(artist -> new ObjectId(artist.getId())).collect(Collectors.toList());
-        List<Release> allByArtistIdIn = repository.findAllByArtistIdIn(collect);
-        return artists.stream()
-                .collect(Collectors.toMap(Function.identity(), artist -> allByArtistIdIn.stream().filter(release -> release.getArtist().getId().equals(artist.getId()))
-                        .collect(Collectors.toList())));
+    public Map<Artist, List<Release>> getReleasesByArtistIds(List<String> artistIds) {
+        
+        // // 1. Konversi String ID menjadi ObjectId (Hanya perlu di sini)
+        // List<ObjectId> objectIds = artistIds.stream()
+        //     .map(ObjectId::new)
+        //     .collect(Collectors.toList());
+
+        // // 2. Akses Database (Single Call)
+        // List<Release> allReleases = repository.findAllByArtistIdIn(objectIds);
+
+
+        // all previos code above IGNORED due to QueryDSL implementation below
+        // more clean and some says it was efficient for large data set
+        Predicate predicate = QRelease.release.artist.any().id.in(artistIds);
+        Iterable<Release> allReleases = repository.findAll(predicate);
+
+        // 3. EFFICIENT GROUPING (The Core Logic)
+        // Mengelompokkan List<Release> yang besar menjadi Map<Artist ID, List<Release>>
+        Map<Artist, List<Release>> releasesByArtistId = new HashMap<>();
+
+        for (Release release : allReleases) {
+            logger.info("Release ID: [{}]",  release.getArtist().size());
+            for (Artist artist : release.getArtist()) {
+                releasesByArtistId
+                    .computeIfAbsent(artist, k -> new ArrayList<>())
+                    .add(release);
+            }
+        }
+
+        // 4. Pengembalian: Langsung mengembalikan Map<String ID, List<Release>>.
+        // Spring GraphQL/DataLoader yang akan mencocokkan hasilnya ke setiap Artist.
+        return releasesByArtistId;
     }
 
     public List<Release> getAllReleasesRest() {

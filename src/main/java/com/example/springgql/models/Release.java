@@ -11,6 +11,7 @@ import org.springframework.data.annotation.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import javax.persistence.PrePersist;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Release {
     private String createdByUser;
 
     @CreatedDate
-    private LocalDateTime creationDate = LocalDateTime.now();
+    private LocalDateTime creationDate;
 
     @LastModifiedDate
     private Date lastModifiedDate;
@@ -45,5 +46,10 @@ public class Release {
     List<Song> songList;
     String duration;
     @DocumentReference(lazy = true)
-    Artist artist;
+    List<Artist> artist;
+
+    @PrePersist
+    public void prePersist() {
+        this.creationDate = LocalDateTime.now();
+    }
 }

@@ -8,10 +8,11 @@ import com.example.springgql.models.graphqlInput.ArtistInput;
 import com.example.springgql.models.graphqlInput.DeletePayload;
 import com.example.springgql.repositories.ArtistRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.MDC;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +21,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ArtistService {
     final ArtistRepository repository;
+    final Logger logger = LoggerFactory.getLogger(getClass());
 
     public Artist saveArtistInput(ArtistInput artistInput) {
         artistInput.setName(artistInput.getName().toLowerCase());
         Artist findItemByName = repository.findItemByName(artistInput.getName());
         Artist entity = Artist.builder()
                 .name(artistInput.getName().toLowerCase())
-                .displayName(artistInput.getDisplayName())
+               .displayName(artistInput.getDisplayName())
                 .build();
 
         if (null != findItemByName) {
@@ -48,6 +50,7 @@ public class ArtistService {
         if (!byId.isPresent()) {
             throw new DataNotFoundException(Artist.class);
         }
+        logger.info("Artist found: {}", byId.get().getName());
         return byId.get();
     }
 
@@ -58,7 +61,7 @@ public class ArtistService {
         }
         Artist artist = byId.get();
         artist.setName(artistInput.getName());
-        artist.setDisplayName(artistInput.getDisplayName());
+       artist.setDisplayName(artistInput.getDisplayName());
         return artist;
     }
 
