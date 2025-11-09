@@ -23,6 +23,9 @@ The following guides illustrate how to use some features concretely:
 ### Produced JSON when logging
 ```{"@timestamp":"2022-12-11T01:25:29.239+07:00","@version":"1","message":"{\"event\":\"GraphQL\",\"traceId\":\"6654d4861a962864\",\"spanId\":\"fd5c4ef85010e45a\",\"startTime\":1670696728946,\"finishTime\":null,\"elapsedTime\":287,\"additionalProperties\":null,\"httpStatus\":200,\"username\":null,\"url\":\"/graphql\",\"clientType\":\"PostmanRuntime/7.28.4\",\"requestHeader\":null,\"requestBody\":\"query { artists { id name } }\",\"httpMethod\":\"POST\",\"errorMessage\":null}","logger_name":"com.example.springgql.logging.LoggingService","thread_name":"http-nio-8080-exec-2","level":"INFO","level_value":20000,"traceId":"6654d4861a962864","spanId":"6654d4861a962864"}```
 
+### Jacoco
+```mvn clean verify``` and test report will auto generated
+
 ### Deploy
 1. delete target to rebuild
    ```rm -rf target```
