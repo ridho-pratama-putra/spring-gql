@@ -49,10 +49,12 @@ spec:
                   name: spring-gql-config-map
                   key: mongodb_db_name
           resources:
-#            limits:
-#              cpu: 300m
-#            requests:
-#              cpu: 200m
+           limits:
+             cpu: 300m
+             memory: 512Mi
+           requests:
+             cpu: 200m
+             memory: 512Mi
           startupProbe:
             httpGet:
               path: /actuator/health
