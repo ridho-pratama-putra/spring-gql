@@ -1,8 +1,3 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: app
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,7 +18,7 @@ spec:
       dnsPolicy: Default
       containers:
         - name: spring-gql-container
-          image: docker.io/library/spring-gql:0.0.4-SNAPSHOT
+          image: asia-southeast2-docker.pkg.dev/galvanic-tea-477705-u8/ridho-portofolio-repo/spring-gql:v1
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -65,7 +60,7 @@ spec:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
-            initialDelaySeconds: 0 #(default)
+            initialDelaySeconds: 180 #(default)
             periodSeconds: 10 # default
           readinessProbe:
             httpGet:
@@ -82,65 +77,33 @@ metadata:
 spec:
   selector:
     app: spring-gql
-#  type: LoadBalancer # as marked as external service
+  type: ClusterIP
   ports:
     - name: spring-gql-service
       protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080 # port of pod
-#      nodePort: 30000 # so now browser will have access by this port
----
-#kind: Service
-#apiVersion: v1
-#metadata:
-#  name: default-http-backend
-#  namespace: app
-#spec:
-#  type: NodePort
-#  selector:
-#    app: spring-gql
-#  ports:
-#    - protocol: TCP
-#      port: 80
-#      targetPort: 8080
 ---
 apiVersion: networking.k8s.io/v1
-kind: IngressClass
-metadata:
-  labels:
-    app.kubernetes.io/component: controller
-  name: ingress-spring-gql-class
-  annotations:
-    ingressclass.kubernetes.io/is-default-class: "true"
-spec:
-  controller: k8s.io/ingress-nginx
----
 kind: Ingress
-apiVersion: networking.k8s.io/v1
 metadata:
-  name: ingress-spring-gql
+  name: spring-gql-public
   namespace: app
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Wajib: Annotation GKE untuk menentukan PATH Health Check GCLB
+    # Ini mengatasi 404 dari GCLB karena defaultnya adalah '/'
+    networking.gke.io/default-backend-health-check-path: "/actuator/health"
+    kubernetes.io/ingress.class: "gce"
+    
+    # Optional: Jika Anda ingin Ingress controller lebih agresif dalam polling
+    # ingress.kubernetes.io/backends: '{"k8s-bs-nama-service:8080":{"healthCheck":{...}}}' 
 spec:
-#  defaultBackend:
-#    service:
-#      name: spring-gql-service
-#      port:
-#        number: 8080
-  ingressClassName: ingress-spring-gql-class
-  tls:
-    - hosts:
-      - kodir.babyshark.com
-      secretName: app-secret-tls
-  rules:
-    - host: kodir.babyshark.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: spring-gql-service
-                port:
-                  number: 8080
+  # STANDAR MODERN: Menggunakan field daripada annotation
+  ingressClassName: gce
+  
+  # Default Backend: Merutekan semua traffic (path: /) ke Service
+  defaultBackend:
+    service:
+      name: spring-gql-service
+      port:
+        number: 80 # Port Service ClusterIP

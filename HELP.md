@@ -44,3 +44,13 @@ The following guides illustrate how to use some features concretely:
    ```kubectl delete service spring-gql-service && kubectl delete deploy spring-gql-deployment```
 9. radicaly redeploy :)
    ```say deleting deployment && kubectl delete deploy spring-gql-deployment && say deleting service && kubectl delete service spring-gql-service && say deleting target && rm -rf target && say build image && ./mvnw package && docker build -t spring-gql:0.0.2-SNAPSHOT . && say deploying to kube && kubectl apply -f ./deployment/deployment-service.yaml```
+
+
+### DEPLOY TO k8
+* gcloud container clusters create ridho-portofolio-cluster \\n --num-nodes=2\\n --machine-type n1-standard-1\\n --zone asia-southeast2 --disk-size 20GB
+* gcloud artifacts repositories create ridho-portofolio-repo     --repository-format=docker --location=asia-southeast2
+* export GOOGLE_CLOUD_PROJECT=`gcloud config list --format="value(core.project)"`
+* ./mvnw -DskipTests com.google.cloud.tools:jib-maven-plugin:build -Dimage=asia-southeast2-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/ridho-portofolio-repo/spring-gql:v1
+* gcloud auth configure-docker asia-southeast2-docker.pkg.dev
+* ./mvnw -DskipTests com.google.cloud.tools:jib-maven-plugin:build -Dimage=asia-southeast2-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/ridho-portofolio-repo/spring-gql:v1
+* k config set-context --current --namespace=app
