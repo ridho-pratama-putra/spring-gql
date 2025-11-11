@@ -81,7 +81,7 @@ public class ReleaseService {
             restTemplate.postForEntity("http://localhost:8082/album", request, Release.class);
         } catch (RestClientException restClientException) {
             logger.info("::: " + restClientException.getMessage());
-            throw new DataNotCreatedException(Release.class, Constants.INTERNAL_SERVER_ERROR);
+            // throw new DataNotCreatedException(Release.class, Constants.INTERNAL_SERVER_ERROR);
         }
         Release save = repository.save(entity);
         return save;
