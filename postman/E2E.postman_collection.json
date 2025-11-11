@@ -1,0 +1,263 @@
+{
+	"info": {
+		"_postman_id": "2ce8675a-bd7d-4da8-a2d7-f0573c4a4644",
+		"name": "E2E",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3843540"
+	},
+	"item": [
+		{
+			"name": "[QUERY] all artist",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer asdasgasd ",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query { \n    artists {  \n        id\n        name \n        displayName\n    } \n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QUERY] artist by id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query($id: ID) {\n    artistById(id: $id) {\n        id\n        name\n        releases {\n            id\n            title\n            category\n            releaseDate\n            releaseType\n            lastModifiedDate\n            artist {\n                displayName\n            }\n        }\n    }\n}",
+						"variables": "{\n    \"id\": \"6550fdcf3f2a1123bb26a851\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[MUTATION] create artist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($input: ArtistInput!) {\n  createArtist(artistInput: $input) {\n    id\n    name\n    displayName\n  }\n}",
+						"variables": "{\n  \"input\": {\n    \"name\": \"ghostband\",\n    \"displayName\":\"Ghost\"\n  }\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[MUTATION] create release on artist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($input: ReleaseInput!) { \n    createReleaseOnArtist(releaseInput: $input) {\n        id\n        title\n        releaseDate\n        creationDate\n        category\n        releaseType\n        artist {\n            name\n        }\n    }\n}",
+						"variables": "{\n    \"input\": {\n        \"title\": \"Imperas\",\n        \"releaseType\": \"ALBUM\",\n        \"category\": [\"ROCK\"],\n        \"releaseDate\": \"2022-03-11T00:00:00\",\n        \"artist\": {\n            \"id\" : \"6555ef38ec94c3715b4ea339\"\n        }\n    }\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QUERY] get releases by artist id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query ($input: ID!, $first: Int, $after: String){\n    releasesByArtistId(id: $input, first: $first, after: $after) {\n        edges {\n            cursor\n            node {\n                id\n                title\n                creationDate\n                releaseDate \n                category\n                artist {\n                    id\n                    name\n                    displayName\n                }\n            }\n        }\n        pageInfo {\n           hasPreviousPage\n           hasNextPage\n           startCursor\n           endCursor\n        }\n    }\n}",
+						"variables": "{\n    \"input\": \"6550fdcf3f2a1123bb26a851\",\n    \"first\": 1,\n    \"after\": \"\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[QUERY] get all releases",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query($first: Int, $after: String) {\n    allReleases(first: $first, after: $after) {\n        edges {\n            cursor\n            node {\n                id\n                title\n                releaseDate\n                creationDate\n                lastModifiedDate\n                releaseType\n                artist {\n                    id\n                    name\n                    displayName\n                }\n            }\n        }\n        pageInfo {\n           hasPreviousPage\n           hasNextPage\n           startCursor\n           endCursor\n        }\n    }   \n}",
+						"variables": "{\n    \"first\" : 100,\n    \"after\": \"\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[MUTATION] delete release by id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($id: ID!) {\n    deleteReleaseById(id: $id) {\n        success\n    }\n}",
+						"variables": "{\n    \"id\": \"6550c5fbab65e05c165af1e0\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[MUTATION] delete artist by id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($id: ID!) {\n    deleteArtistById(id: $id) {\n        success\n        message\n    }   \n}",
+						"variables": "{\n    \"id\": \"655080fd08a74016c35e5ad3\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[MUTATION] update artis",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($id: ID!, $artistInput: ArtistInput!) {\n    updateArtist(id: $id, artistInput: $artistInput) {\n        name\n        displayName\n    }\n}",
+						"variables": "{\n    \"id\": \"6550fdcf3f2a1123bb26a851\",\n    \"artistInput\": {\n        \"name\": \"tuelus\",\n        \"displayName\": \"Tulus\"\n    }\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[MUTATION] update release",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($id: ID!, $releaseInput: ReleaseInput!) {\n    updateRelease(id: $id, releaseInput: $releaseInput) {\n        title\n        releaseDate\n        creationDate\n        lastModifiedDate\n    }\n}",
+						"variables": "{\n    \"id\": \"6550fe00abccb4142ad1fea5\",\n    \"releaseInput\": {\n        \"title\": \"Monokrom\",\n        \"category\": [\"ROCK\", \"JAZZ\"],\n        \"releaseType\": \"ALBUM\"\n    }\n}"
+					}
+				},
+				"url": {
+					"raw": "{{url}}/graphql",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
