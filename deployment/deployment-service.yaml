@@ -18,7 +18,7 @@ spec:
       dnsPolicy: Default
       containers:
         - name: spring-gql-container
-          image: asia-southeast2-docker.pkg.dev/galvanic-tea-477705-u8/ridho-portofolio-repo/spring-gql:v1
+          image: asia-southeast2-docker.pkg.dev/galvanic-tea-477705-u8/ridho-portofolio-repo/spring-gql:v2
           ports:
             - containerPort: 8080
               protocol: TCP

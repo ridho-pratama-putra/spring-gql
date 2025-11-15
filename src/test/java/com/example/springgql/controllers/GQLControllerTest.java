@@ -15,15 +15,15 @@
  import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
  import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
  import org.springframework.boot.test.mock.mockito.MockBean;
- import org.springframework.cloud.sleuth.Span;
- import org.springframework.cloud.sleuth.TraceContext;
- import org.springframework.cloud.sleuth.Tracer;
+//  import org.springframework.cloud.sleuth.Span;
+//  import org.springframework.cloud.sleuth.TraceContext;
+//  import org.springframework.cloud.sleuth.Tracer;
  import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
  import org.springframework.graphql.test.tester.GraphQlTester;
  import org.springframework.web.client.RestTemplate;
 
- import javax.servlet.http.HttpServletRequest;
- import javax.servlet.http.HttpServletResponse;
+//  import javax.servlet.http.HttpServletRequest;
+//  import javax.servlet.http.HttpServletResponse;
  import java.time.LocalDateTime;
  import java.util.*;
  import java.util.stream.Collectors;
@@ -44,20 +44,20 @@
      @MockBean
      LoggingService loggingService;
 
-     @MockBean
-     HttpServletRequest httpServletRequest;
+//      @MockBean
+//      HttpServletRequest httpServletRequest;
 
-     @MockBean
-     HttpServletResponse httpServletResponse;
+//      @MockBean
+//      HttpServletResponse httpServletResponse;
 
-     @MockBean
-     Tracer tracer;
+//      @MockBean
+//      Tracer tracer;
 
-     @MockBean
-     Span span;
+//      @MockBean
+//      Span span;
 
-     @MockBean
-     TraceContext traceContext;
+//      @MockBean
+//      TraceContext traceContext;
 
      @MockBean
      RestTemplate restTemplate;
@@ -67,8 +67,8 @@
 
      @BeforeEach
      public void init() {
-         Mockito.when(tracer.nextSpan()).thenReturn(span);
-         Mockito.when(tracer.nextSpan().context()).thenReturn(traceContext);
+        //  Mockito.when(tracer.nextSpan()).thenReturn(span);
+        //  Mockito.when(tracer.nextSpan().context()).thenReturn(traceContext);
      }
 
      @Test
